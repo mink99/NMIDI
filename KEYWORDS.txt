@@ -1,0 +1,164 @@
+#####################################
+#   Code Coloring Map For NMIDI  #
+#####################################
+
+#####################################
+#        Datatypes (KEYWORD1)       #
+#####################################
+
+MidiPort	KEYWORD1
+CommandType	KEYWORD1
+ThruMode	KEYWORD1
+Channel	KEYWORD1
+
+#####################################
+# Methods and Functions (KEYWORD2/3)#
+#####################################
+// Support
+
+combineBytes KEYWORD2
+decodeNote KEYWORD2
+decodeOct KEYWORD2
+decodeNote2 KEYWORD2
+
+//Main Functions:
+end	KEYWORD2
+begin	KEYWORD2
+setChannel	KEYWORD2
+setThruMode	KEYWORD2
+keysPressed	KEYWORD2
+enableRunningStatus	KEYWORD2
+getPortID	KEYWORD2
+scanForData	KEYWORD3
+
+//Extra Functions:
+getEventLength	KEYWORD2
+commandTypeToString	KEYWORD2
+
+//Send Functions:
+sendMidiEvent KEYWORD2
+sendMidiEventRaw KEYWORD2
+//Voice Messages:
+sendNoteOn KEYWORD2
+sendKeyPressure KEYWORD2
+sendNoteOff KEYWORD2
+sendControlChange KEYWORD2
+sendControlChangeHi KEYWORD2
+sendProgramChange KEYWORD2
+sendChannelPressure KEYWORD2
+sendPitchBend KEYWORD2
+//Mode Messages:
+modeChange KEYWORD2
+//System Messages:
+sendSysEx KEYWORD2
+sendQuarterTimeFrame KEYWORD2
+sendSPP KEYWORD2
+sendSongSelect KEYWORD2
+sendTuneRequest KEYWORD2
+//Real-Time Messages:
+timingClock KEYWORD2
+sendStart KEYWORD2
+sendContinue KEYWORD2
+sendStop KEYWORD2
+activeSense KEYWORD2
+resetAll KEYWORD2
+
+//Set Handler Functions:
+
+handleMidiEvent KEYWORD2
+handleNoteOn KEYWORD2
+handleNoteOff KEYWORD2
+handleKeyPressure KEYWORD2
+handleControlChange KEYWORD2
+handleProgramChange KEYWORD2
+handleChannelPressure KEYWORD2
+handlePitchBend KEYWORD2
+
+    //Mode Messages:
+
+handleChannelMode KEYWORD2
+    //System Messages:
+handleSysEx KEYWORD2
+handleQuarterFrame KEYWORD2
+handleSongPosition KEYWORD2
+handleSongSelect KEYWORD2
+handleTuneRequest KEYWORD2
+    //Real-Time Messages:
+handleTimingClock KEYWORD2
+handleStart KEYWORD2
+handleContinue KEYWORD2
+handleStop KEYWORD2
+handleActiveSense KEYWORD2
+handleReset KEYWORD2
+
+isChannelMessage KEYWORD2
+isSystemMessage KEYWORD2
+
+writeMsg KEYWORD2
+		
+//Variables:
+# myVar	KEYWORD3
+
+#####################################
+#      Definitions (LITERAL1/2)     #
+#####################################
+
+//Defs:
+# myDef	LITERAL1
+
+//Enums:
+
+//CommandType Enum:
+NOTE_ON	LITERAL2
+INVALID	LITERAL2
+START	LITERAL2
+STOP	LITERAL2
+NO_NEW_MSG	LITERAL2
+NOTE_OFF	LITERAL2
+CTRL_CHANGE	LITERAL2
+PROG_CHANGE	LITERAL2
+PITCH_BEND	LITERAL2
+SYSEX_START	LITERAL2
+SONG_POS	LITERAL2
+SONG_SELECT	LITERAL2
+TUNE_REQ	LITERAL2
+SYSEX_END	LITERAL2
+CONTINUE	LITERAL2
+SOFT_RESET	LITERAL2
+KEY_PRESSURE	LITERAL2
+CHANNEL_MODE	LITERAL2
+Q_TIME_FRAME	LITERAL2
+TIMING_CLOCK	LITERAL2
+ACTIVE_SENSE	LITERAL2
+CHANNEL_PRESSURE	LITERAL2
+
+//Channel Enum:
+CH1	LITERAL2
+CH2	LITERAL2
+CH3	LITERAL2
+CH4	LITERAL2
+CH5	LITERAL2
+CH6	LITERAL2
+CH7	LITERAL2
+CH8	LITERAL2
+CH9	LITERAL2
+CH10	LITERAL2
+CH11	LITERAL2
+CH12	LITERAL2
+CH13	LITERAL2
+CH14	LITERAL2
+CH15	LITERAL2
+CH16	LITERAL2
+CH_ALL	LITERAL2
+
+//ThruMode Enum:
+FORWARD_OFF	LITERAL2
+FORWARD_ALL	LITERAL2
+FORWARD_OTHER	LITERAL2
+FORWARD_SELF	LITERAL2
+
+NRPN_LSB		LITERAL2
+NRPN_MSB		LITERAL2
+RPN_LSB		    LITERAL2
+RPN_MSB			LITERAL2
+NRPN_TERM		LITERAL2
