@@ -115,12 +115,12 @@ namespace nmidi
     };
 	enum NRPNType
     {
-		NRPN_LSB		= 0x62;
-		NRPN_MSB		= 0x63;
-		RPN_LSB		    = 0x64;
-		RPN_MSB			= 0x65;
-		NRPN_TERM		= 0xFF;
-	}
+		NRPN_LSB		= 0x62,
+		NRPN_MSB		= 0x63,
+		RPN_LSB		    = 0x64,
+		RPN_MSB			= 0x65,
+		NRPN_TERM		= 0xFF,
+	};
     //Possible Channels:
     enum Channel {CH1, CH2, CH3, CH4, CH5, CH6, CH7, CH8, CH9, CH10, CH11, CH12, CH13, CH14, CH15, CH16, CH_NONE, CH_ALL};
     //Traffic Forwarding Modes:
@@ -130,6 +130,14 @@ namespace nmidi
         FORWARD_OTHER, ///< Forwards received commands to MIDI OUT unless they're on the listening channel. This makes the most sense, and is the default setting.
         FORWARD_SELF,  ///< Forwards received commands to MIDI OUT only if they are on the listening channel.
         FORWARD_ALL,   ///< Any traffic received on MIDI IN is immediately forwarded to MIDI OUT. Warning, may cause a feedback loop in some setups!
+    };
+    
+    enum MTCFrames
+    {
+        MTC_24FPS = 24,   ///< Thru Disabled. Nothing received on the MIDI IN port is forwarded to the MIDI OUT port.
+        MTC_25FPS = 25, ///< Forwards received commands to MIDI OUT unless they're on the listening channel. This makes the most sense, and is the default setting.
+        MTC_29FPS = 29,  ///< Forwards received commands to MIDI OUT only if they are on the listening channel.
+        MTC_30FPS = 30,   ///< Any traffic received on MIDI IN is immediately forwarded to MIDI OUT. Warning, may cause a feedback loop in some setups!
     };
     /** @defgroup Main MidiPort
      *  These Classes are Used For core features
@@ -158,9 +166,7 @@ namespace nmidi
         {
             return _keysPressed;
         };
-        //---- Send MIDI Messages ----
-        boolean sendMidiEvent(CommandType, Channel, byte, byte);
-        boolean sendMidiEventRaw(byte, byte, byte, int8_t);
+       
         //Voice Messages:
         void sendNoteOn(Channel, byte, byte);
         void sendKeyPressure(Channel, byte, byte);
@@ -188,7 +194,7 @@ namespace nmidi
 
         // utilities sends
         void sendBankChange(Channel, byte , byte );
-        void sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, byte ff, byte fps );
+        void sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, byte ff, MTCFrames fps );
         //  “Channel Mode Messages.
         void sendAllSoundsOff(Channel );	//0x78
         void sendResetAll( Channel );	//0x79
@@ -353,8 +359,7 @@ namespace nmidi
         void stop();
         void cont();
         void reset();
-        long ticks();
-        void frames(int8_t);  // 24,25,29,30
+        void frames(MTCFrames);  // 24,25,29,30
         void locate(int8_t, int8_t, int8_t, int8_t);
         long microsPerTick();
         void trig();

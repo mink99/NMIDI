@@ -14,48 +14,7 @@ NMidi Libary C++ FILE v2.1 by Mink
 
 using namespace nmidi;
 
-/**
-Send any type of message, except SysEx.
 
-Parameters: cmd (CommandType), channel (Channel), arg1 (0-127), arg2 (0-127)
- */
-boolean MidiPort::sendMidiEvent(CommandType cmd, Channel channel, byte arg1, byte arg2)
-{
-    //Error Checking:
-    if(cmd < NOTE_OFF || cmd > SOFT_RESET) return false;
-    if(cmd == CHANNEL_MODE) cmd = CTRL_CHANGE;
-    else if(cmd == SYSEX_START || cmd == SYSEX_END) return false;
-    if(arg1 > 127) arg1 = 127;
-    if(arg2 > 127) arg2 = 127;
-    //Write Data to MIDI Port:
-    char len = getEventDataLength(cmd);
-    if(cmd > 0xF0) _SerialObj.write((uint8_t)cmd);
-    else _SerialObj.write((uint8_t)cmd + channel);
-    if(len > 0) _SerialObj.write((uint8_t)arg1);
-    if(len > 1) _SerialObj.write((uint8_t)arg2);
-    return true;
-}
-
-/**
-Send any type of message, except SysEx.
-
-Parameters: cmd (CommandType), channel (Channel), arg1 (0-127), arg2 (0-127)
- */
-
-boolean MidiPort::sendMidiEventRaw(byte cmd, byte arg1, byte arg2, int8_t dataBytes)
-{
-    //Error Checking:
-    if(cmd < NOTE_OFF || cmd > SOFT_RESET + 0x0F) return false;
-    if(cmd == SYSEX_START || cmd == SYSEX_END) return false;
-    if(arg1 > 127) arg1 = 127;
-    if(arg2 > 127) arg2 = 127;
-    //Write Data to MIDI Port:
-
-    _SerialObj.write((uint8_t)cmd);
-    if(dataBytes > 0) _SerialObj.write((uint8_t)arg1);
-    if(dataBytes > 1) _SerialObj.write((uint8_t)arg2);
-    return true;
-}
 
 /** Bank Select in one message.
 
@@ -93,97 +52,7 @@ void MidiPort::sendBankChange(Channel ch , byte _cc0, byte _cc32)
     writeMsg(_msg, 6);
 };
 
-/** MTCTimeframe Message utility.
 
-When the time is running continuously, the 32-bit time code is broken into 8 4-bit pieces,
-and one piece is transmitted each quarter frame. I.e. 96—120 times per second,
-depending on the frame rate. Since it takes eight quarter frames for a complete time code message,
-the complete SMPTE time is updated every two frames.
-
-which of these 8 4-bit pieces will be sent is detemined by the param counter
-
-A quarter-frame messages consists of a status byte of 0xF1, followed by a single 7-bit data value: 3 bits to identify the piece,
-and 4 bits of partial time code.
-When time is running forward, the piece numbers increment from 0–7;
-with the time that piece 0 is transmitted is the coded instant, and the remaining pieces are transmitted later.
-
-
-Unlike standard SMPTE timecode, MIDI timecode's quarter-frame and full-frame messages carry a two-bit flag value
-that identifies the rate of the timecode, specifying it as either:
-
-24 frame/s (standard rate for film work)
-25 frame/s (standard rate for PAL video)
-29.97 frame/s (drop-frame timecode for NTSC video)
-30 frame/s (non-drop timecode for NTSC video)
-
-the FPS are encoded as 24,25,30 and 29 for 29.97
-
-@param counter [0 .. 7]
-    MTC Messages are sent in 8 pieces...
-
-@param hh [0 .. 127]
-    Hour
-@param mm [0 .. 59]
-    mm
-@param ss [0 .. 59]
-    Seconds
-@param ff [0 .. fps]
-    Frames
-
-@param fps [24,25,29,30]
-    the FPS of the MTC Session, 29.97 is encoded as 29
-
- */
-
-void MidiPort::sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, byte ff, byte fps )
-{
-    byte _msg[2];
-    uint8_t toSend;
-    switch (counter)
-    {
-    case 0:
-        toSend = 0x00 | LO_NIBBLE(ff);
-        break;
-    case 1:
-        toSend = 0x10 | HI_NIBBLE(ff);
-        break;
-    case 2:
-        toSend = 0x20 | LO_NIBBLE(ss);
-        break;
-    case 3:
-        toSend = 0x30 | HI_NIBBLE(ss);
-        break;
-    case 4:
-        toSend = 0x40 | LO_NIBBLE(mm);
-        break;
-    case 5:
-        toSend = 0x50 | HI_NIBBLE(mm);
-        break;
-    case 6:
-        toSend = 0x60 | LO_NIBBLE(hh);
-        break;
-    case 7:
-        toSend = 0x70 | HI_NIBBLE(hh);
-        switch (fps)
-        {
-        case 24:
-            toSend | 0b01;
-            break;
-        case 25:
-            toSend | 0b01;
-            break;
-        case 29:
-            toSend | 0b10;
-            break;
-        case 30:
-            toSend | 0b11;
-            break;
-        }
-    }
-    _msg[0] = 0xF1;
-    _msg[1] = toSend;
-    writeMsg(_msg, 2);
-};
 /** Function 0x78
 
 TEST OK

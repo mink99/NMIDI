@@ -302,66 +302,7 @@ void MidiPort::sendSysEx(byte idCode[], unsigned int idCodeLength, byte data[], 
     _SerialObj.write((uint8_t)SYSEX_END);
 }
 
-/** ppor mans MTC Quarter Frame .
 
- */
-void MidiPort::sendQuarterTimeFrame(byte msgType, byte values)
-{
-    //Error Checking:
-    if(msgType > 7) msgType = 7;
-    if(values > 15) values = 15;
-    //Write Data to MIDI Port:
-    _SerialObj.write((uint8_t)Q_TIME_FRAME);
-    _SerialObj.write((uint8_t)(msgType << 4) + values);
-}
-/** SPP Song Position Pointer.
-
-This message consists of 3 bytes;
-a status byte (decimal 242, hex 0xF2),
-followed by two 7-bit data bytes (least significant byte first) forming a 14-bit value which specifies the number of "MIDI beats"
-(1 MIDI beat = a 16th note = 6 clock pulses) since the start of the song.
-This message only needs to be sent once if a jump to a different position in the song is needed.
-Thereafter only realtime clock messages need to be sent to advance the song position one tick at a time.
-
-@param beats
-    the beats since the start of the song
-
- */
-void MidiPort::sendSPP(uint16_t beats)
-{
-    //Error Checking:
-    if(beats > 16383) beats -= 16383;
-    if(beats > 16383) beats = 0;  //give up
-    //Perform Data Calculation:
-    uint8_t _lsb = LSB(beats);
-    uint8_t _msb = MSB(beats);
-    //Write Data to MIDI Port:
-    _SerialObj.write((uint8_t)SONG_POS);
-    _SerialObj.write(_lsb);
-    _SerialObj.write(_msb);
-}
-
-
-
-//Send 24 times per quarter note when SYNC is enabled:
-void MidiPort::timingClock()
-{
-    _SerialObj.write((uint8_t)TIMING_CLOCK);
-}
-
-//Start, continue, and stop playing:
-void MidiPort::sendStart()
-{
-    _SerialObj.write((uint8_t)START);
-}
-void MidiPort::sendContinue()
-{
-    _SerialObj.write((uint8_t)CONTINUE);
-}
-void MidiPort::sendStop()
-{
-    _SerialObj.write((uint8_t)STOP);
-}
 
 
 
