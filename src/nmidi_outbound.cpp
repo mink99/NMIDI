@@ -38,6 +38,7 @@ TEST OK
     the cc32 LSB part of the Message
 
  */
+
 void MidiPort::sendBankChange(Channel ch , byte _cc0, byte _cc32)
 {
     byte _msg[6];

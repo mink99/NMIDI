@@ -80,7 +80,7 @@ it should assume that it's dealing with a running status situation.
 writing sysex is basically three steps:
 \code
 void beginTransferSysex(byte,byte ); //0xf0
-void transferSysex(byte[], uint8_t); 
+void transferSysex(byte[], uint8_t);
 void endTransferSysex(); //0xf7
 \endcode
 
@@ -122,7 +122,7 @@ while (...)
 endTransferSysexR(x);
 \endcode
 
-while in a loop, you provide the data, but also read the result of the function ans provide it either to the nex call or to 
+while in a loop, you provide the data, but also read the result of the function ans provide it either to the nex call or to
 void endTransferSysexR(byte ); //0xf7
 
 \section session_sec Writing Midi Clock and MTC : Sessions
@@ -591,17 +591,6 @@ CommandType MidiPort::getEventCmdType(byte status)
     }
     return INVALID;
 }
-
-//Get total byte length of event when completed.
-//Returns -1 if cmd is SysEx start or end byte.
-// int8_t MidiPort::getEventDataLength(byte cmd)
-// {
-// if(cmd == 0b11110000 || cmd == 0b11110111) return -1;
-// else if(cmd >= 0b11110100) return 0;
-// else if((cmd >> 4) == 0b1100 || (cmd >> 4) == 0b1101 || cmd == 0b11110001 || cmd == 0b11110011) return 1;
-// else return 2;
-// }
-
 boolean MidiPort::isChannelMessage(CommandType cmd)
 {
     if ((cmd > 0x7f) && (cmd < 0xf0)) return true;

@@ -38,7 +38,7 @@ char *decodeNote2 (byte note);
 #endif
 namespace nmidi
 {
-	
+
 
 
 #define CC_Bank_Select	0			// Allows user to switch bank for patch selection. Program change used with Bank Select. MIDI can access 16,384 patches per MIDI channel.
@@ -85,7 +85,7 @@ namespace nmidi
     //Receivable Message Types:
     enum CommandType
     {
-		//internal Messages:
+        //internal Messages:
         NO_NEW_MSG       	= 0x00, ///< No New Events Recieved
         INVALID          	= 0x01, ///< Invalid or Badly Formatted Event Recieved!
         CHANNEL_MODE     	= 0x02, ///< Channel Mode (Uses Same Command ID as CTRL_CHANGE)
@@ -113,14 +113,14 @@ namespace nmidi
         ACTIVE_SENSE     = 0xFE, ///< Just don't use it. It's pointless.
         SOFT_RESET       = 0xFF, ///< Perform Soft Reset
     };
-	enum NRPNType
+    enum NRPNType
     {
-		NRPN_LSB		= 0x62,
-		NRPN_MSB		= 0x63,
-		RPN_LSB		    = 0x64,
-		RPN_MSB			= 0x65,
-		NRPN_TERM		= 0xFF,
-	};
+        NRPN_LSB		= 0x62,
+        NRPN_MSB		= 0x63,
+        RPN_LSB		    = 0x64,
+        RPN_MSB			= 0x65,
+        NRPN_TERM		= 0xFF,
+    };
     //Possible Channels:
     enum Channel {CH1, CH2, CH3, CH4, CH5, CH6, CH7, CH8, CH9, CH10, CH11, CH12, CH13, CH14, CH15, CH16, CH_NONE, CH_ALL};
     //Traffic Forwarding Modes:
@@ -131,7 +131,7 @@ namespace nmidi
         FORWARD_SELF,  ///< Forwards received commands to MIDI OUT only if they are on the listening channel.
         FORWARD_ALL,   ///< Any traffic received on MIDI IN is immediately forwarded to MIDI OUT. Warning, may cause a feedback loop in some setups!
     };
-    
+
     enum MTCFrames
     {
         MTC_24FPS = 24,   ///< Thru Disabled. Nothing received on the MIDI IN port is forwarded to the MIDI OUT port.
@@ -143,7 +143,7 @@ namespace nmidi
      *  These Classes are Used For core features
      *  @{
      */
-    
+
     class MidiPort
     {
     public:
@@ -166,7 +166,7 @@ namespace nmidi
         {
             return _keysPressed;
         };
-       
+
         //Voice Messages:
         void sendNoteOn(Channel, byte, byte);
         void sendKeyPressure(Channel, byte, byte);
@@ -194,7 +194,7 @@ namespace nmidi
 
         // utilities sends
         void sendBankChange(Channel, byte , byte );
-        void sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, byte ff, MTCFrames fps );
+        uint8_t sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, byte ff, MTCFrames fps );
         //  “Channel Mode Messages.
         void sendAllSoundsOff(Channel );	//0x78
         void sendResetAll( Channel );	//0x79
@@ -205,11 +205,11 @@ namespace nmidi
         void sendMonoOn(Channel ch, uint8_t voices = 0); //0x7e
         void sendPolyOn(Channel); //0x7f
         // blockwise send
-        void beginTransferSysex(byte,byte ); //0xf0
+        void beginTransferSysex(byte, byte ); //0xf0
         void transferSysex(byte[], uint8_t); //0xf7
-		uint8_t transferSysexR(byte[], uint8_t, uint8_t); //0xf7
+        uint8_t transferSysexR(byte[], uint8_t, uint8_t); //0xf7
         void endTransferSysex(); //0xf7
-		void endTransferSysexR(byte ); //0xf7
+        void endTransferSysexR(byte ); //0xf7
 
         // status	99	NRPN MSB	98	NRPN LSB	06	value	101	127	100	12
         void beginTransferNRPN(Channel, byte, byte); //0x65
@@ -245,6 +245,11 @@ namespace nmidi
         void *handleActiveSense(void (*handler)(const uint8_t ));  //[No Parameters]
         void *handleReset(void (*handler)(const uint8_t ));  //[No Parameters]
 
+ // unoptimised write
+        // encapsulate Serial object for USB
+		void writeMsg(uint8_t msg[], uint8_t len = 3);
+        void writeMsg(uint8_t msg);
+
     private:
         //---- Internal Functions ----
         CommandType readPort();
@@ -261,11 +266,9 @@ namespace nmidi
         boolean processRPN(byte newByte );
         boolean processNRPN(byte newByte );
 
-        // unoptimised write
-        // encapsulate Serial object for USB
+       
 
-        void writeMsg(uint8_t msg[], uint8_t len = 3);
-        void writeMsg(uint8_t msg);
+       
 
 
         //---- Private Callback Variables ----
@@ -326,50 +329,21 @@ namespace nmidi
      *  @{
      */
 
-    /** @brief A Session for Midi Clock */
-    class MidiClockSession
-    {
-    public:
-        MidiClockSession(  MidiPort);
-        void continuous(boolean);
-        void start();
-        void stop();
-        void cont();
-        void reset();
-        long ticks();
-        void bpm(int8_t);
-        void locate(int16_t);
-        long microsPerTick();
-        void trig();
-        int8_t bpm();
-    private:
-        MidiPort _midiPort;
-        long _counter;
-        long _beats;
-        int8_t _bpm;
-        boolean _continuous;
-    };
 
-    /** @brief A Session for Midi Time Code  */
-    class MTCSession
-    {
-    public:
-        MTCSession(  MidiPort);
-        void start();
-        void stop();
-        void cont();
-        void reset();
-        void frames(MTCFrames);  // 24,25,29,30
-        void locate(int8_t, int8_t, int8_t, int8_t);
-        long microsPerTick();
-        void trig();
-        int8_t frames();
-    private:
-        MidiPort _midiPort;
-        int8_t _hh, _mm, _ss, _ff, _frames;
-    };
-
+ 
     /** @} */ // end of group1
 } // namespace
 
+// create a function that cann be assiged to a timer interrupt
+// provide the name of the instance of the session
+#define createTimerInterrupt(Session) \
+void _##Session##ISR(void) \
+{                          \
+	Session.isr();         \
+};
+// attacha timer interrupt
+// provide the name of the instance of the session
+#define attachTimerInterrupt(Timer,Session) \
+ Timer.attachInterrupt(_##Session##ISR);
+ 
 #endif

@@ -56,12 +56,12 @@ void MidiPort::sendSPP(uint16_t beats)
     uint8_t _lsb = LSB(beats);
     uint8_t _msb = MSB(beats);
     //Write Data to MIDI Port:
-     byte _msg[3];
+    byte _msg[3];
     _msg[0] = SONG_POS;
     _msg[1] = _lsb;
     _msg[2] = _msb;
     writeMsg(_msg);
-  
+
 }
 /** ppor mans MTC Quarter Frame .
 
@@ -115,9 +115,11 @@ the FPS are encoded as 24,25,30 and 29 for 29.97
 @param fps [24,25,29,30]
     the FPS of the MTC Session, 29.97 is encoded as 29
 
+@return the incremented counter
+* 
  */
 
-void MidiPort::sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, byte ff, MTCFrames fps )
+uint8_t MidiPort::sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, byte ff, MTCFrames fps )
 {
     byte _msg[2];
     uint8_t toSend;
@@ -165,6 +167,9 @@ void MidiPort::sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, byt
     _msg[0] = 0xF1;
     _msg[1] = toSend;
     writeMsg(_msg, 2);
+    counter++;
+    if (counter > 7) counter = 0;
+    return counter;
 };
 
 
