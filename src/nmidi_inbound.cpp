@@ -24,8 +24,7 @@ Text
 void MidiPort::scanForData()
 {
     CommandType event = readPort();
-    Serial.print("Scan  : Command Identified as ");
-    Serial.println(event, HEX);
+    
     //Trigger Events:
     if(event != NO_NEW_MSG && event != INVALID)
     {
@@ -124,15 +123,13 @@ CommandType MidiPort::readPort()
         if(_thruMode == FORWARD_ALL) _SerialObj.write((uint8_t)newByte);
         if(newByte > 0x7f)    // new Message
         {
-            Serial.print("ReadPort : new Message ");
-            Serial.println(newByte, HEX);
+            
             //TODO: Clock may interrupt command
             if (msg_discard) msg_discard = false;
             //todo: incomplete Messages
             msg_status = newByte;
             msg_command = getEventCmdType(newByte);
-            Serial.print("ReadPort : Command Identified as ");
-            Serial.println(msg_command, HEX);
+            
             if (isChannelMessage(msg_command))
             {
                 msg_channel = (Channel)(newByte & 0x0F);
@@ -141,18 +138,15 @@ CommandType MidiPort::readPort()
             {
                 msg_channel = CH_NONE;
             }
-            Serial.print("ReadPort : Channel Identified as ");
-            Serial.println(msg_channel, HEX);
+            
             msg_pending_bytes = getEventDataLength(msg_command);
             msg_length = msg_pending_bytes + 1;
-            Serial.print("ReadPort : data Length Identified as ");
-            Serial.println(msg_length);
+            
         }
         else
         {
             if (msg_discard) return INVALID;
-            Serial.print("ReadPort : new Data ");
-            Serial.println(newByte, HEX);
+            
             if (msg_pending_bytes == 0)  //running status message
             {
                 if (isChannelMessage(msg_command))
@@ -165,8 +159,7 @@ CommandType MidiPort::readPort()
                     return INVALID;
                 }
             }
-            Serial.print("ReadPort : pending ");
-            Serial.println(msg_pending_bytes, HEX);
+            
             if ((msg_length - msg_pending_bytes) == 1)
             {
                 msg_param1 = newByte;
@@ -178,6 +171,7 @@ CommandType MidiPort::readPort()
             msg_pending_bytes--;
         }
         if (!msg_pending_bytes) return msg_command;
-        return NO_NEW_MSG;
+        
     }
+	return NO_NEW_MSG;
 };

@@ -13,19 +13,19 @@ using namespace nmidi;
 
 //Create new instance of ArduMIDI library:
 //ArduMIDI(SerialObject (Serial, Serial1...), ListenChannel (CH1-CH16 or CH_ALL))
-MidiPort midi = MidiPort(Serial1);
+MidiPort midi = MidiPort(Serial2);
 
 void setup() {
   //Turn of MEGA 2560's anoying always-on status LED:
   pinMode(13, OUTPUT); digitalWrite(13, LOW);
 
   //Begin MIDI library:
-  Serial1.begin(31250);
+  Serial2.begin(31250);
 
 
   //Begin regular Serial:
   Serial.begin(9600);
-  midi.begin();
+  midi.begin(4);
 
   //Control h: FORWARD_OFF, FORWARD_ALL, FORWARD_OTHER (default), FORWARD_SELF
   // midi.setThrow data is forwarded:
@@ -42,7 +42,7 @@ void loop() {
   digitalWrite(13, midi.keysPressed());   // turn the LED on (HIGH is the voltage level)
  
 }
-void serialEvent1()
+void serialEvent2()
 {
  midi.scanForData();
 }
@@ -50,6 +50,8 @@ void serialEvent1()
 boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {
   //Print MIDI Event Data:
   Serial.print("***** ");
+  Serial.print(port);
+  Serial.print(" ** ");
   Serial.print(midi.commandTypeToString(cmd));
   Serial.print(", ");
   if (ch == CH_ALL) Serial.print("[N/A]");

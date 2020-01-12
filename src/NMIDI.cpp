@@ -160,8 +160,9 @@ MidiPort::MidiPort(Stream &serialObject, Channel listenCh) : _SerialObj(serialOb
 {
     if(listenCh > CH_ALL) listenCh = CH_ALL;
     _listenCh = listenCh;
-    if(_listenCh == CH_ALL) _thruMode = FORWARD_OFF;
-    else _thruMode = FORWARD_OTHER;
+    _thruMode = FORWARD_OFF;
+    
+	_SerialObj = serialObject;
     //Make Sure Handler Pointers Are Empty:
     _handleMidiEvent       = 0;
     _handleNoteOn        = 0;
@@ -605,6 +606,8 @@ boolean MidiPort::isSystemMessage(CommandType cmd)
 //Determine how to forward traffic.
 void MidiPort::forwardTraffic(byte newByte)
 {
+	if(_thruMode == FORWARD_OFF) return;   //FORWARD_OTHER:
+	
     if(_thruMode == FORWARD_OTHER)   //FORWARD_OTHER:
     {
         if(_listenCh == CH_ALL)   //If listen to all channels:

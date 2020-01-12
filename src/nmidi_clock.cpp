@@ -146,3 +146,23 @@ uint8_t MidiClockSession::bpm()
 {
     return _bpm;
 };
+boolean MidiClockSession::isShuffleTrigger (int8_t _tick, int8_t _shift, int8_t _res )
+    {
+      switch (_res)
+      {
+        case 8:
+          if (_tick % 24 == 0) return true;   //quarters are no shifted;
+          if (_tick % 12 == _shift) return true;   // 1/8 are shifted;
+          break;
+        case 12:
+          if (_tick % 24 == 0) return true;       //quarters are no shifted;
+          if (_tick % 8 == _shift) return true;   // 1/8T are  shifted;
+          break;
+        case 16:
+          if (_tick % 24 == 0) return true;       //quarters are no shifted;
+          if (_tick % 6 == _shift) return true;   // 1/16 are  shifted;
+          break;
+      }
+
+      return false;
+    }

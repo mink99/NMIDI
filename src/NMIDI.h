@@ -122,7 +122,26 @@ namespace nmidi
         NRPN_TERM		= 0xFF,
     };
     //Possible Channels:
-    enum Channel {CH1, CH2, CH3, CH4, CH5, CH6, CH7, CH8, CH9, CH10, CH11, CH12, CH13, CH14, CH15, CH16, CH_NONE, CH_ALL};
+    enum Channel {
+		CH1 = 1, 
+		CH2 = 2, 
+		CH3 = 3, 
+		CH4 = 4, 
+		CH5 = 5, 
+		CH6 = 6, 
+		CH7 = 7, 
+		CH8 = 8, 
+		CH9 = 9, 
+		CH10 = 10, 
+		CH11 = 11, 
+		CH12 = 12, 
+		CH13 = 13, 
+		CH14 = 14, 
+		CH15 = 15, 
+		CH16 = 16, 
+		CH_NONE = 0, 
+		CH_ALL = 127
+		};
     //Traffic Forwarding Modes:
     enum ThruMode
     {
@@ -324,14 +343,11 @@ namespace nmidi
 
     /** @} */ // end of group1
 
-    /** @defgroup Sessions Classes for Session Management
-     *  These Classes are Used For Session Management
-     *  @{
-     */
+    
 
 
  
-    /** @} */ // end of group1
+    
 } // namespace
 
 // create a function that cann be assiged to a timer interrupt

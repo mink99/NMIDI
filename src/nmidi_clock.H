@@ -28,6 +28,7 @@ namespace nmidi
         long bpmToTick(uint8_t);
         void isr();
         uint8_t bpm();
+		
     private:
         MidiPort *_midiPort;
         volatile long _counter;
@@ -36,6 +37,7 @@ namespace nmidi
         boolean _continuous;
         volatile int _mode = mode_stop;
         int16_t _cpt = 100;
+		boolean isShuffleTrigger (int8_t _tick, int8_t _shift = 0, int8_t _res = 8);
     };
 }
  
