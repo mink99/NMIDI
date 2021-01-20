@@ -1,18 +1,69 @@
 
 == License ==
 
-Copyright (C) 2019 by Kristian Blume
+Copyright (C) 2019 by Kristian Blume (Mink)
 
 
-This program is free software: you can redistribute it and/or modify
+This library is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
+This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
+== Abstract ==
+
+This library is intended to create sophisticated midi tools on the
+Arduino platform. Midi was desingned to run on tiny platforms, at this time it 
+was CPU like 6502, Z80 or similar. On the various Arduino platforms, from a
+tiny Nano to a Teensy 4 we have a wide range of hardware available, some
+of which the original developers could only be dreaming of.
+
+There is a standard library for Midi on Arduino, the famous FourtySevenEffects Midi Library.
+This library may be used in a similar fashion, although the focus of some features
+is slightly different. In fact this library started as an attempt to add some 
+features to this library, but each slight change resulted in a major sequence
+of required changes somewhere else, so i came to the point, that it would be
+less effort to create my own library and leave the FourtySevenEffects library intact.
+
+As a starting point I used another Midi library,  ArduMidi by Pecacheu, which was 
+conceptually closer to what i wanted to have, but was never finished, so not very much 
+of the original code remains. 
+
+== basic concepts ==
+
+The library is built around the concept of a port, which handles midi communication, 
+and sessions, that connect to a port to add special features.
+
+A port has an underlying stream instance, in the current implementation a Serial Stream,
+but I2C or similar protocols or maybe USB are planned, so that the Library can be used
+in a multiport / multiprocessor environment, with multiple Arduinos taking over different 
+tasks.
+
+Sessions plug onto a port and perform specialised functions that are not always required, like 
+MTC, MidiClock or device specific features.
+
+== Reading Data ==
+
+Reading Data from a port is straightforward  through callbacks, either the universal "handleMidiEvent"
+or specialised handlers can be used. As this library is designed in multiport scenarios as they may be
+needed for a midi patchbay or a sophisticated sequencer, midi events from all ports can be routed to exactly
+one callback, and within that routine you can do elaborated processing or filtering, a parameter will tell you the origin
+of the event.
+
+== Writing Data ==
+
+Almost all of the midi messages to be sent are available as sendXXX, with some additional comfort features.
+NRPN and sysex are supported too..
+
+== utilities ==
+
+some utilites like MSB/LSB processing and displaying note numbers are provided too.
+
+

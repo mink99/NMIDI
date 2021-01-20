@@ -5,6 +5,7 @@ based on ArduMidi C++ FILE v2.1 by Pecacheu
 NMidi Libary C++ FILE v2.1 by Mink
 
  */
+#ifndef ARDUINO_ESP8266_NODEMCU 
 
 #include <Stream.h>
 #include <Arduino.h>
@@ -72,8 +73,8 @@ void MidiPort::sendQuarterTimeFrame(byte msgType, byte values)
     if(msgType > 7) msgType = 7;
     if(values > 15) values = 15;
     //Write Data to MIDI Port:
-    _SerialObj.write((uint8_t)Q_TIME_FRAME);
-    _SerialObj.write((uint8_t)(msgType << 4) + values);
+    _SerialObjOut.write((uint8_t)Q_TIME_FRAME);
+    _SerialObjOut.write((uint8_t)(msgType << 4) + values);
 }
 /** MTCTimeframe Message utility.
 
@@ -173,3 +174,4 @@ uint8_t MidiPort::sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, 
 };
 
 
+#endif 

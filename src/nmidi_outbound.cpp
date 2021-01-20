@@ -41,16 +41,22 @@ TEST OK
 
 void MidiPort::sendBankChange(Channel ch , byte _cc0, byte _cc32)
 {
-    byte _msg[6];
+	//Serial.print(" BNK CC0");
+	//Serial.print(_cc0);
+	//Serial.print(" CC32");
+    // Serial.println(_cc32);
+    byte _msg[3];
     //MSB
     _msg[0] = CTRL_CHANGE + ch;
     _msg[1] = 0x00;
     _msg[2] = _cc32;
+	writeMsg(_msg, 3);
     //LSB
-    _msg[4] = CTRL_CHANGE + ch;
-    _msg[5] = 0x20;
-    _msg[6] = _cc0;
-    writeMsg(_msg, 6);
+    _msg[0] = CTRL_CHANGE + ch;
+    _msg[1] = 0x20;
+    _msg[2] = _cc0;
+    writeMsg(_msg, 3);
+	//Serial.println("BC End");
 };
 
 
@@ -258,7 +264,7 @@ A MIDI event that carries the MIDI tune request message tells a MIDI device to t
  */
 void MidiPort::sendTuneRequest()
 {
-    _SerialObj.write((uint8_t)TUNE_REQ);
+    _SerialObjOut.write((uint8_t)TUNE_REQ);
 }
 
 /** Function
@@ -341,7 +347,9 @@ This message needs only one data byte which specifies the new program number.
  */
 void MidiPort::sendProgramChange(Channel ch, byte program)
 {
-    //Error Checking:
+    // Serial.print(" PRG ");
+    // Serial.println(program);
+	//Error Checking:
     // if(ch > CH16) ch = CH16;
     if(program > 127) program = 127;
     //Perform Command Calculation:
@@ -349,9 +357,30 @@ void MidiPort::sendProgramChange(Channel ch, byte program)
     _msg[0] = PROG_CHANGE + ch;
     _msg[1] = program;
     _msg[2] = 0x00;
-    writeMsg(_msg);
+    writeMsg(_msg,2);
+	//Serial.println("PC End");
 }
+/** Function
 
+test ok
+The Program Change message is used to specify the type of instrument
+which should be used to play sounds on a given Channel.
+This message needs only one data byte which specifies the new program number.
+
+@param bank
+    param the cc32 part of the Bank 0..127
+@param program
+    param the program 0..127
+@param ch
+    the Midi Channel (0..15)
+
+
+ */
+void MidiPort::sendProgramChange(Channel ch,byte bank, byte program)
+{
+   sendBankChange(ch,bank,0);
+   sendProgramChange(ch,program);
+}
 
 /** Function
 

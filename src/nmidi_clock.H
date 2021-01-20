@@ -39,6 +39,20 @@ namespace nmidi
         int16_t _cpt = 100;
 		boolean isShuffleTrigger (int8_t _tick, int8_t _shift = 0, int8_t _res = 8);
     };
+	
+
 }
+
+// create a function that can be assiged to a timer interrupt
+// provide the name of the instance of the session
+#define createTimerInterrupt(Session) \
+void _##Session##ISR(void) \
+{                          \
+	Session.isr();         \
+};
+// attach a timer interrupt
+// provide the name of the instance of the session
+#define attachTimerInterrupt(Timer,Session) \
+ Timer.attachInterrupt(_##Session##ISR);
  
  

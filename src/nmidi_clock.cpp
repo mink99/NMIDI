@@ -5,6 +5,8 @@ NMidi Libary C++ FILE v2.1 by Mink
 
  */
 
+
+
 #include <Stream.h>
 #include <Arduino.h>
 
@@ -12,13 +14,18 @@ NMidi Libary C++ FILE v2.1 by Mink
 #include <NMidi_clock.h>
 
 #ifdef USE_TIMER_THREE_MIDI_CLOCK
-#include <TimerThree.h>
-#define TIMER Timer3
+	#include <TimerThree.h>
+	#define TIMER Timer3
+#endif
 
-#else
-#include <TimerOne.h>
-#define TIMER Timer1
+#ifdef USE_ESP8266_MIDI_CLOCK
+	#include <ESP8266_HW_ISRTimer.h>
+	#define TIMER _ESP8266_HW_ISRTimer 
+#endif
 
+#ifdef USE_TIMER_ONE_MIDI_CLOCK
+	#include <TimerOne.h>
+	#define TIMER Timer1
 #endif
 
 

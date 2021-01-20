@@ -23,6 +23,8 @@ void setup() {
   portA.enableRunningStatus();
   portB.begin();
   portB.enableRunningStatus();
+  portA.sendAllNotesOff(CH1);
+  portB.sendAllNotesOff(CH2);
 }
 
 void loop() {
@@ -35,15 +37,30 @@ void loop() {
   for (int i = 1; i < 12; i++)
   {
     portA.sendNoteOn(CH1, rand + i, 90);
-    portB.sendNoteOn(CH2, rand + i + 12, 90);
+    Serial.print("1 ");
     Serial.println(rand + i);
 
     delay(120);
     portA.sendNoteOff(CH1, rand + i, 90);
+  }
+  delay(120);
+  portA.sendAllNotesOff(CH1);
+  portB.sendAllNotesOff(CH2);
+
+  for (int i = 1; i < 12; i++)
+  {
+    portB.sendNoteOn(CH2, rand + i + 12, 90);
+    Serial.print("2 ");
+    Serial.println(rand + i);
+
+    delay(120);
     portB.sendNoteOff(CH2, rand + i + 12, 90);
   }
   delay(120);
-  
+
+  portA.sendAllNotesOff(CH1);
+  portB.sendAllNotesOff(CH2);
+
   //port.sendBankChange(CH1,1, 32);
 
   //port.sendAllSoundsOff(CH1);

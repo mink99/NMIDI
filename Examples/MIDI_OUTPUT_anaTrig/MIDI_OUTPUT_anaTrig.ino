@@ -20,81 +20,18 @@ void setup() {
   Serial1.begin(31250);
   port.begin();
   port.enableRunningStatus();
-  pinMode(3, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(3), pinISR, RISING  ); //(Empfohlen)
+  pinMode(2, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(2), pinISR, RISING  ); //(Empfohlen)
 }
 
 void loop() {
 
 
-//  //  //Generate random note:
-//  byte rand = random(42, 80);
-//  //Turn note on, then off again:
-//  Serial.println(rand);
-//  
-//  for (int i = 1; i < 12; i++)
-//  {
-//    port.sendNoteOn(CH1, rand + i, 90);
-//    
-//    delay(300);
-//  }
-//  delay(300);
-//  for (int i = 1; i < 12; i++)
-//  {
-//    port.sendNoteOff(CH1, rand + i, 90);
-//    
-//    delay(300);
-//  }
-//  delay(1000);
-//  Serial.println(port.keysPressed());
-
-  //port.sendBankChange(CH1,1, 32);
-
-  //port.sendAllSoundsOff(CH1);
-
-  //port.sendResetAll(CH1);
-
-  //  port.sendLocalControl(CH1,true);
-  //  port.sendLocalControl(CH1,false);
-
-  //port.sendAllNotesOff(CH1);
-
-  //port.sendOmniOn(CH1);
-
-  //port.sendOmniOff(CH1);
-
-  // port.sendMonoOn(CH1,4);
-
-  //port.sendPolyOn(CH1);
-
-  //port.sendSongSelect(7);
-
-  //port.sendTuneRequest();
-
-  // for (int i = 0; i < 32; i++)
-  // {
-  //  port.sendControlChange(CH1,i,62);
-  //  delay(300);
-  //
-  // }
-
-  // for (int i = 0; i < 32; i++)
-  // {
-  //  port.sendControlChangeHi(CH2,i,12344);
-  //  delay(300);
-  //
-  // }
-
-  //  for (int i = 0; i < 32; i++)
-  //  {
-  //    port.sendProgramChange(CH1, i);
-  //    delay(300);
-  //
-  //  }
 }
 void pinISR()
 {
   onOff = !onOff;
+  Serial.println("*");
   if (onOff)    port.sendNoteOn(CH1, 72, 90);
   else port.sendNoteOff(CH1, 72, 90);
 }

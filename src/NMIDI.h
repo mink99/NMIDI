@@ -9,6 +9,19 @@ NMidi Libary C++ FILE v2.1 by Mink
 #define NMIDI_h
 
 #include <stream.h>
+
+#ifdef ESP8266
+	#define 	USE_ESP8266_MIDI_CLOCK
+	#undef USE_TIMER_THREE_MIDI_CLOCK
+	#undef USE_TIMER_ONE_MIDI_CLOCK
+#else
+	#ifndef USE_TIMER_THREE_MIDI_CLOCK
+		#define 	USE_TIMER_ONE_MIDI_CLOCK
+	#endif
+#endif
+
+
+
 #include <Arduino.h>
 
 
@@ -29,6 +42,7 @@ NMidi Libary C++ FILE v2.1 by Mink
 #define LO_NIBBLE(b) (byte)(b & 0x0F)
 #define HI_NIBBLE(b) (byte)((b & 0xF0) >> 4 )
 
+#define _CH(b) (Channel)(b-1)
 
 unsigned short combineBytes(unsigned char _msb, unsigned char _lsb);
 const char *decodeNote (byte note);
@@ -168,6 +182,7 @@ namespace nmidi
     public:
         //---- Setup ----
         MidiPort(Stream &serialObject, Channel listenCh = CH_ALL);
+		MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel listenCh = CH_ALL);
         int8_t getPortID()
         {
             return _portID;
@@ -193,6 +208,7 @@ namespace nmidi
         void sendControlChange(Channel, byte, byte);
         void sendControlChangeHi(Channel, byte, int16_t);
         void sendProgramChange(Channel, byte);
+		void sendProgramChange(Channel, byte,byte);
         void sendChannelPressure(Channel, byte);
         void sendPitchBend(Channel, int16_t);
         void sendPitchBendCenter(Channel);
@@ -316,7 +332,8 @@ namespace nmidi
         void (*_handleActiveSense)(const uint8_t );
         void (*_handleReset)(const uint8_t );
         //---- Main Variables ----
-        Stream &_SerialObj;
+        Stream &_SerialObjIn;
+		Stream &_SerialObjOut;
         byte _listenCh;
         byte _thruMode;
         boolean _sysExMode = false;
@@ -342,24 +359,8 @@ namespace nmidi
     };
 
     /** @} */ // end of group1
-
-    
-
-
- 
-    
 } // namespace
 
-// create a function that cann be assiged to a timer interrupt
-// provide the name of the instance of the session
-#define createTimerInterrupt(Session) \
-void _##Session##ISR(void) \
-{                          \
-	Session.isr();         \
-};
-// attacha timer interrupt
-// provide the name of the instance of the session
-#define attachTimerInterrupt(Timer,Session) \
- Timer.attachInterrupt(_##Session##ISR);
+
  
 #endif
