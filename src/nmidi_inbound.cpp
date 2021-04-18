@@ -116,11 +116,11 @@ Text
 CommandType MidiPort::readPort()
 {
     //Read Available MIDI Data:
-    while(_SerialObjIn.available() > 0)
+    while(_SerialObjIn->available() > 0)
     {
         //Read Next Byte:
-        byte newByte = _SerialObjIn.read();
-        if(_thruMode == FORWARD_ALL) _SerialObjOut.write((uint8_t)newByte);
+        byte newByte = _SerialObjIn->read();
+        if(_thruMode == FORWARD_ALL) _SerialObjOut->write((uint8_t)newByte);
         if(newByte > 0x7f)    // new Message
         {
             

@@ -155,17 +155,46 @@ under construction ...
 
 using namespace nmidi;
 //Main Library Functions:
-MidiPort::MidiPort(Stream &serialObject, Channel listenCh) : MidiPort::MidiPort(serialObject,serialObject,listenCh){};
+MidiPort::MidiPort(Channel listenCh) 
+{
+	if(listenCh > CH_ALL) listenCh = CH_ALL;
+    _listenCh = listenCh;
+    _thruMode = FORWARD_OFF;
+	_handleMidiEvent       = 0;
+    _handleNoteOn        = 0;
+    _handleNoteOff         = 0;
+    _handleKeyPressure   = 0;
+    _handleControlChange   = 0;
+    _handleProgramChange = 0;
+    _handleChannelPressure = 0;
+    _handlePitchBend     = 0;
+    _handleChannelMode     = 0;
+    _handleSysEx         = 0;
+    _handleQuarterFrame    = 0;
+    _handleSongPosition  = 0;
+    _handleSongSelect      = 0;
+    _handleTuneRequest   = 0;
+    _handleTimingClock     = 0;
+    _handleStart         = 0;
+    _handleContinue        = 0;
+    _handleStop          = 0;
+    _handleActiveSense     = 0;
+    _handleReset         = 0;
+};
+
+MidiPort::MidiPort(Stream &serialObjectInOut, Channel listenCh) : MidiPort::MidiPort(serialObjectInOut,serialObjectInOut,listenCh){};
 
 	
-MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel listenCh): _SerialObjIn(serialObjectIn),_SerialObjOut(serialObjectOut)
+//MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel listenCh): MidiPort::MidiPort(listenCh),_SerialObjIn(serialObjectIn),_SerialObjOut(serialObjectOut)
+MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel listenCh): MidiPort::MidiPort(listenCh)
 {
     if(listenCh > CH_ALL) listenCh = CH_ALL;
     _listenCh = listenCh;
     _thruMode = FORWARD_OFF;
     
-	//_SerialObjIn = serialObjectIn;
-	//_SerialObjOut = serialObjectOut;
+	_SerialObjIn  = &serialObjectIn;
+	_SerialObjOut = &serialObjectOut;
+	
     //Make Sure Handler Pointers Are Empty:
     _handleMidiEvent       = 0;
     _handleNoteOn        = 0;
@@ -188,13 +217,35 @@ MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel liste
     _handleActiveSense     = 0;
     _handleReset         = 0;
 }
-
+// initialise the Library
+//Parameters: id the identifier for this port, this will be provided back to the callbacks to distinguish the ports when using a callback on several ports
 void MidiPort::begin(int8_t id) ///< provide an identifyer for this port
 {
     _portID = id;
     
 }
+// initialise the Library
+//Parameters: id the identifier for this port; this will be provided back to the callbacks to distinguish the ports when using a callback on several ports,
+//            serialObjectInOut, the transportstream for input and output
 
+void  MidiPort::begin(Stream &serialObjectInOut, int8_t id)
+{
+	_SerialObjIn = &serialObjectInOut;
+	_SerialObjOut = &serialObjectInOut;
+	_portID = id;
+}
+// initialise the Library
+//Parameters: id the identifier for this port; this will be provided back to the callbacks to distinguish the ports when using a callback on several ports,
+//            serialObjectIn, the transportstream for input
+//            serialObjectOut, the transportstream for output
+
+void  MidiPort::begin(Stream &serialObjectIn,Stream &serialObjectOut, int8_t id)
+{
+	_SerialObjIn = &serialObjectIn;
+	_SerialObjOut = &serialObjectOut;
+	_portID = id;
+}
+		
 void MidiPort::setInputChannelFilter(Channel listenCh) ///< process just one channel
 {
     if(listenCh > CH_ALL) listenCh = CH_ALL;
@@ -272,9 +323,9 @@ void MidiPort::modeChange(Channel channel, byte settingCode, byte value)
     //Perform Command Calculation:
     uint8_t cmd = CTRL_CHANGE + channel;
     //Write Data to MIDI Port:
-    _SerialObjOut.write((uint8_t)cmd);
-    _SerialObjOut.write((uint8_t)settingCode);
-    _SerialObjOut.write((uint8_t)value);
+    _SerialObjOut->write((uint8_t)cmd);
+    _SerialObjOut->write((uint8_t)settingCode);
+    _SerialObjOut->write((uint8_t)value);
 }
 
 
@@ -287,21 +338,21 @@ void MidiPort::sendSysEx(byte idCode[], unsigned int idCodeLength, byte data[], 
     if(idCodeLength > 3) idCodeLength = 3;
     if(idCodeLength == 0 || dataLength == 0) return;
     //Write Command to MIDI Port:
-    _SerialObjOut.write((uint8_t)SYSEX_START);
+    _SerialObjOut->write((uint8_t)SYSEX_START);
     //Write ID Code to MIDI Port:
     for(int i = 0; i < idCodeLength; i++)
     {
-        if(idCode[i] > 127) _SerialObjOut.write((uint8_t)127);
-        else _SerialObjOut.write((uint8_t)idCode[i]);
+        if(idCode[i] > 127) _SerialObjOut->write((uint8_t)127);
+        else _SerialObjOut->write((uint8_t)idCode[i]);
     }
     //Write SysEx Data to MIDI Port:
     for(int i = 0; i < dataLength; i++)
     {
-        if(data[i] > 127) _SerialObjOut.write((uint8_t)127);
-        else _SerialObjOut.write((uint8_t)data[i]);
+        if(data[i] > 127) _SerialObjOut->write((uint8_t)127);
+        else _SerialObjOut->write((uint8_t)data[i]);
     }
     //Write End Command to MIDI Port:
-    _SerialObjOut.write((uint8_t)SYSEX_END);
+    _SerialObjOut->write((uint8_t)SYSEX_END);
 }
 
 
@@ -615,14 +666,14 @@ void MidiPort::forwardTraffic(byte newByte)
         {
             if(_activeChannel == CH_ALL)   //If no channel:
             {
-                _SerialObjOut.write((uint8_t)newByte);
+                _SerialObjOut->write((uint8_t)newByte);
             }
         }
         else     //If listen to one channel:
         {
             if(_activeChannel != _listenCh || _activeChannel == CH_ALL)   //If on different channel or no channel:
             {
-                _SerialObjOut.write((uint8_t)newByte);
+                _SerialObjOut->write((uint8_t)newByte);
             }
         }
     }
@@ -632,14 +683,14 @@ void MidiPort::forwardTraffic(byte newByte)
         {
             if(_activeChannel != CH_ALL)   //If has channel:
             {
-                _SerialObjOut.write((uint8_t)newByte);
+                _SerialObjOut->write((uint8_t)newByte);
             }
         }
         else     //If listen to one channel:
         {
             if(_activeChannel == _listenCh || _activeChannel == CH_ALL)   //If on same channel or no channel:
             {
-                _SerialObjOut.write((uint8_t)newByte);
+                _SerialObjOut->write((uint8_t)newByte);
             }
         }
     }
@@ -675,12 +726,12 @@ inline void MidiPort::writeMsg(uint8_t msg[], uint8_t len)
         {
             if (msg[0] == _msg_lastSent)
             {
-                _SerialObjOut.write(&msg[1], 2);
+                _SerialObjOut->write(&msg[1], 2);
 				//Serial.println("W1");
             }
             else
             {
-                _SerialObjOut.write(msg, len);
+                _SerialObjOut->write(msg, len);
 				//Serial.println("W2");
             }
             _msg_lastSent = msg[0];
@@ -693,18 +744,18 @@ inline void MidiPort::writeMsg(uint8_t msg[], uint8_t len)
     else
     {
         _msg_lastSent = 0;
-        _SerialObjOut.write(msg, len);
+        _SerialObjOut->write(msg, len);
 		//Serial.println("W3");
     }
 #ifdef IMMEDIATE_SEND
-    _SerialObjOut.flush();
+    _SerialObjOu->flush();
 #endif
 }
 inline void MidiPort::writeMsg(uint8_t msg)
 {
     _msg_lastSent = 0;
-    _SerialObjOut.write(msg);
+    _SerialObjOut->write(msg);
 #ifdef IMMEDIATE_SEND
-    _SerialObjOut.flush();
+    _SerialObjOut->flush();
 #endif
 }

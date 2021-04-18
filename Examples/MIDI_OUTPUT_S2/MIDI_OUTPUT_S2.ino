@@ -4,20 +4,21 @@
 
 #include <HardwareSerial.h> //<-- Not Necessary, But Recomended for Stability Across Arduino IDE Versions.
 
+#define PORT Serial1                                                                                                                                                                                              
 
 #include <NMIDI.h>
 
 using namespace nmidi;
 
 //Create new instance of NMIDI library:
-MidiPort port = MidiPort(Serial2);
+MidiPort port = MidiPort(PORT);
 
 void setup() {
   Serial.begin(9600);
   //Initialize MIDI Libary:
-  Serial2.begin(31250);
+  PORT.begin(31250);
   port.begin();
-  port.enableRunningStatus();
+  //port.enableRunningStatus();
 }
 
 void loop() {
@@ -29,20 +30,12 @@ void loop() {
   
   for (int i = 1; i < 12; i++)
   {
-    port.sendNoteOn(CH1, rand + i, 90);
-    
-    delay(300);
-  }
-  delay(300);
-  for (int i = 1; i < 12; i++)
-  {
+    port.sendNoteOn(CH1, rand + i, 90);    
+    delay(90);
     port.sendNoteOff(CH1, rand + i, 90);
-    
-    delay(300);
   }
-  delay(1000);
-  Serial.println(port.keysPressed());
-
+  delay(150);
+  
   //port.sendBankChange(CH1,1, 32);
 
   //port.sendAllSoundsOff(CH1);

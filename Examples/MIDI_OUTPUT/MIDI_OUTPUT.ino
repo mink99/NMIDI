@@ -34,6 +34,7 @@ void loop() {
 
   for (int i = 1; i < 12; i++)
   {
+  
     portA.sendNoteOn(CH1, rand + i, 90);
     portB.sendNoteOn(CH2, rand + i + 12, 90);
     Serial.println(rand + i);

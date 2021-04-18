@@ -264,7 +264,7 @@ A MIDI event that carries the MIDI tune request message tells a MIDI device to t
  */
 void MidiPort::sendTuneRequest()
 {
-    _SerialObjOut.write((uint8_t)TUNE_REQ);
+    _SerialObjOut->write((uint8_t)TUNE_REQ);
 }
 
 /** Function

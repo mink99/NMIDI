@@ -20,9 +20,9 @@ void setup() {
   Serial2.begin(31250);
   Serial.begin(9600);
   portA.begin();
-  portA.enableRunningStatus();
+  //portA.enableRunningStatus();
   portB.begin();
-  portB.enableRunningStatus();
+  //portB.enableRunningStatus();
   portA.sendAllNotesOff(CH1);
   portB.sendAllNotesOff(CH2);
 }

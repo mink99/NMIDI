@@ -8,6 +8,8 @@ NMidi Libary C++ FILE v2.1 by Mink
 #ifndef NMIDI_h
 #define NMIDI_h
 
+#include <ndebug.h>
+
 #include <stream.h>
 
 #ifdef ESP8266
@@ -181,13 +183,21 @@ namespace nmidi
     {
     public:
         //---- Setup ----
-        MidiPort(Stream &serialObject, Channel listenCh = CH_ALL);
+		// one stream for in & out
+        MidiPort(Stream &serialObjectInOut, Channel listenCh = CH_ALL);
+		// two streams for in & out
 		MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel listenCh = CH_ALL);
+		// the stream will be provided in the begin() method
+		MidiPort(Channel listenCh = CH_ALL);
         int8_t getPortID()
         {
             return _portID;
         };
         void begin(int8_t id = -1) ;
+		// one stream for in & out
+		void begin(Stream &serialObjectInOut, int8_t id = -1);
+		// two streams for in & out
+		void begin(Stream &serialObjectIn,Stream &serialObjectOut, int8_t id = -1);
         void enableRunningStatus(boolean enable = true) ///< use running status on send
         {
             _runningStatus = enable;
@@ -332,8 +342,8 @@ namespace nmidi
         void (*_handleActiveSense)(const uint8_t );
         void (*_handleReset)(const uint8_t );
         //---- Main Variables ----
-        Stream &_SerialObjIn;
-		Stream &_SerialObjOut;
+        Stream *_SerialObjIn;
+		Stream *_SerialObjOut;
         byte _listenCh;
         byte _thruMode;
         boolean _sysExMode = false;

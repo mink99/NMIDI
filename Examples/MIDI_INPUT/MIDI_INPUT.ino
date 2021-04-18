@@ -25,6 +25,7 @@ void setup() {
 
   //Begin regular Serial:
   Serial.begin(9600);
+  Serial.print("MIDI TEST ");
   midi.begin();
 
   //Control h: FORWARD_OFF, FORWARD_ALL, FORWARD_OTHER (default), FORWARD_SELF
