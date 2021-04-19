@@ -21,3 +21,10 @@ $RECYCLE.BIN/
 # =========================
 # Operating System Files
 # =========================
+Examples/MIDI_INPUT/inols-clangd-err.log
+Examples/MIDI_INPUT/inols-clangd.log
+Examples/MIDI_INPUT/inols-err.log
+Examples/MIDI_INPUT/inols.log
+prj/NMidi.geany
+prj/NMidi.geany
+*.geany

@@ -21,6 +21,7 @@ indent_mode=2
 name=NMidi
 base_path=K:\\develop\\libraries\\NMIDI\\src
 description=
+file_patterns=
 
 [long line marker]
 long_line_behaviour=1
@@ -35,4 +36,10 @@ header_patterns=*.h;*.H;*.hpp;*.hxx;*.h++;*.hh;
 ignored_dirs_patterns=.*;CVS;
 ignored_file_patterns=*.o;*.obj;*.a;*.lib;*.so;*.dll;*.lo;*.la;*.class;*.jar;*.pyc;*.mo;*.gmo;
 generate_tag_prefs=0
-external_dirs=
+external_dirs=K:\\develop\\libraries\\NMIDI\\Examples\\MIDI_INPUT;
+
+[build-menu]
+C++FT_00_LB=_Compile
+C++FT_00_CM="D:\\bin\\arduino\\arduino_debug.exe" --verify --verbose "%f"
+C++FT_00_WD=%d
+filetypes=C++;
