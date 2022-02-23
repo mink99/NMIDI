@@ -8,72 +8,98 @@
 //Note: This sketch requires an Arduino with multiple serial ports, such as an Arduino MEGA.
 
 
+#define PORTX Serial1
+#define PORTY Serial2
+
+
+
 #include <NMIDI.h>
+
 using namespace nmidi;
 
-//Create new instance of ArduMIDI library:
-//ArduMIDI(SerialObject (Serial, Serial1...), ListenChannel (CH1-CH16 or CH_ALL))
-MidiPort midi = MidiPort(Serial1);
+//Create new instance of nMidi library:
+
+MidiPort portA = MidiPort(PORTX);
+MidiPort portB = MidiPort(PORTY);
 
 void setup() {
   //Turn of MEGA 2560's anoying always-on status LED:
-  pinMode(13, OUTPUT); digitalWrite(13, LOW);
 
   //Begin MIDI library:
-  Serial1.begin(31250);
-
+  PORTX.begin(31250);
+  PORTY.begin(31250);
 
   //Begin regular Serial:
+  portA.begin(1);
+  portA.enableRunningStatus(false);
+  portB.begin(2);
+  portB.enableRunningStatus(false);
   Serial.begin(9600);
-  Serial.print("MIDI TEST ");
-  midi.begin();
+  Serial.println("MIDI TEST ");
+  Serial.print("Serial port:");
+  Serial.print(PORTX);
+  Serial.print(" with id:");
+  Serial.println(portA.getPortID());
+  Serial.print("Serial Port:");
+  Serial.print(PORTY);
+  Serial.print(" with id:");
+  Serial.println(portB.getPortID());
+  Serial.println("---------------------------------------");
+  
 
-  //Control h: FORWARD_OFF, FORWARD_ALL, FORWARD_OTHER (default), FORWARD_SELF
-  // midi.setThrow data is forwarded:
-  //ThruModesuMode(FORWARD_ALL);
+  portA.handleMidiEvent(processData);
+  portB.handleMidiEvent(processData);
+//  portA.handleNoteOn(_handleNoteON);
+//  portA.handleNoteOff(_handleNoteOFF);
+//
+//  portA.handleProgramChange(_handleProgramChange);
 
-
-  midi.handleMidiEvent(processData);
-  midi.handleNoteOn(_handleNoteON);
-  midi.handleNoteOff(_handleNoteOFF);
-  midi.handleProgramChange(_handleProgramChange);
 }
 
 void loop() {
-  digitalWrite(13, midi.keysPressed());   // turn the LED on (HIGH is the voltage level)
- 
-}
-void serialEvent1()
-{
- midi.scanForData();
+  portA.scanForData();
+  portB.scanForData();
+
+
 }
 
 boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {
   //Print MIDI Event Data:
   Serial.print("***** ");
-  Serial.print(midi.commandTypeToString(cmd));
-  Serial.print(", ");
+  Serial.print(port);
+  Serial.print(":");
+  Serial.print(portA.commandTypeToString(cmd));
+  Serial.print(" (");
+  Serial.print(msgLen);
+  Serial.print(")CH:  ");
   if (ch == CH_ALL) Serial.print("[N/A]");
   else Serial.print(ch + 1);
-  Serial.print(", {");
+  Serial.print("[");
   for (int i = 0; i < msgLen; i++)
   {
     Serial.print(data[i], HEX);
     Serial.print(" ");
   }
-  Serial.println("}");
+  Serial.println("]");
   return true;
 }
 void _handleNoteON(uint8_t port, Channel ch, byte note, byte velocity)
 {
-  Serial.print("***** Note ON");
+  Serial.print("***** Note ON (");
+  Serial.print(port);
+  Serial.print(",");
+  Serial.print(ch + 1);
+  Serial.print("):");
   Serial.println(decodeNote2(note));
-
+  portA.sendNoteOn(ch, note, velocity);
 }
 void _handleNoteOFF(uint8_t port, Channel ch, byte note, byte velocity)
 {
-  Serial.print("***** Note OFF");
+  Serial.print("***** Note OFF(");
+  Serial.print(ch + 1);
+  Serial.print("):");
   Serial.println(decodeNote2(note));
+  portA.sendNoteOff(ch, note, velocity);
 }
 void _handleProgramChange(uint8_t port, Channel ch, byte pgm)
 {

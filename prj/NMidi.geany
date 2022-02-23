@@ -28,7 +28,9 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=-1
+current_page=0
+FILE_NAME_0=8300;C++;0;EUTF-8;1;1;0;K%3A%5Cdevelop%5Clibraries%5CNMIDI%5Csrc%5CNMIDI.h;0;4
+FILE_NAME_1=19394;C++;0;EUTF-8;1;1;0;K%3A%5Cdevelop%5Clibraries%5CNMIDI%5Csrc%5CNMIDI.cpp;0;4
 
 [prjorg]
 source_patterns=*.c;*.C;*.cpp;*.cxx;*.c++;*.cc;*.m;
@@ -42,4 +44,10 @@ external_dirs=K:\\develop\\libraries\\NMIDI\\Examples\\MIDI_INPUT;
 C++FT_00_LB=_Compile
 C++FT_00_CM="D:\\bin\\arduino\\arduino_debug.exe" --verify --verbose "%f"
 C++FT_00_WD=%d
-filetypes=C++;
+filetypes=C++;Arduino;
+ArduinoFT_00_LB=_Build
+ArduinoFT_00_CM=D:\\bin\\arduino-PR-beta\\compile.cmd %f %d %p
+ArduinoFT_00_WD=
+ArduinoFT_02_LB=Arduino Parameters
+ArduinoFT_02_CM="D:\\bin64\\Arduino CLI\\create-parameters.exe"
+ArduinoFT_02_WD=

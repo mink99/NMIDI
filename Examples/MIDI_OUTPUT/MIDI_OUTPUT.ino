@@ -11,18 +11,18 @@ using namespace nmidi;
 
 //Create new instance of NMIDI library:
 MidiPort portA = MidiPort(Serial1);
-MidiPort portB = MidiPort(Serial2);
+//MidiPort portB = MidiPort(Serial2);
 
 void setup() {
 
   //Initialize MIDI Libary:
   Serial1.begin(31250);
-  Serial2.begin(31250);
+//  Serial2.begin(31250);
   Serial.begin(9600);
   portA.begin();
-  portA.enableRunningStatus();
-  portB.begin();
-  portB.enableRunningStatus();
+  portA.enableRunningStatus(false);
+//  portB.begin();
+//  portB.enableRunningStatus();
 }
 
 void loop() {
@@ -36,12 +36,12 @@ void loop() {
   {
   
     portA.sendNoteOn(CH1, rand + i, 90);
-    portB.sendNoteOn(CH2, rand + i + 12, 90);
+    //portB.sendNoteOn(CH2, rand + i + 12, 90);
     Serial.println(rand + i);
 
     delay(120);
     portA.sendNoteOff(CH1, rand + i, 90);
-    portB.sendNoteOff(CH2, rand + i + 12, 90);
+    //portB.sendNoteOff(CH2, rand + i + 12, 90);
   }
   delay(120);
   

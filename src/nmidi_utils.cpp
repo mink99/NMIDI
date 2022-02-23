@@ -56,3 +56,47 @@ char *decodeNote2 (byte note)
     sprintf(notelogString, notefmtString, decodeNote(note), decodeOct(note));
     return notelogString;
 }
+/**
+ *  \brief will calculate the required Ticks for a timer Object on a given bpm
+ *
+ *  \param [in] bpm
+ *  \return the the parameter for a timerX.setPeriod  
+ *
+ *  \details this is not reentrant, you must copy away the result before the next call
+ */
+long bpm2tick(uint8_t __bpm)
+{
+  return magic_number / (long)__bpm;
+}
+/**
+ *  \brief will calculate the required Ticks for a timer Object on a given bpm, rounded to a base of 4
+ *
+ *  \param [in] bpm
+ *  \return the the parameter for a timerX.setPeriod  
+ *
+ *  \details this is not reentrant, you must copy away the result before the next call
+ */
+
+long bpm2tick4(uint8_t __bpm)
+{
+  long l = magic_number / (long)__bpm;
+  l /= 4;
+  l *= 4;
+  return l;
+  
+}
+boolean isChannelMessage(byte cmd)
+{
+    if ((cmd > 0x7f) && (cmd < 0xf0)) return true;
+    return false ;
+}
+boolean isSystemMessage(byte cmd)
+{
+    if (cmd >= 0xf0) return true;
+    return false ;
+}
+boolean isRealtimeMessage(byte cmd)
+{
+    if ((cmd >= 0xf8) && (cmd < 0xfd)) return true;
+    return false ;
+}

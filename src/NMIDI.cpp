@@ -160,6 +160,8 @@ MidiPort::MidiPort(Channel listenCh)
 	if(listenCh > CH_ALL) listenCh = CH_ALL;
     _listenCh = listenCh;
     _thruMode = FORWARD_OFF;
+	_runningStatus = false;
+	
 	_handleMidiEvent       = 0;
     _handleNoteOn        = 0;
     _handleNoteOff         = 0;
@@ -191,9 +193,11 @@ MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel liste
     if(listenCh > CH_ALL) listenCh = CH_ALL;
     _listenCh = listenCh;
     _thruMode = FORWARD_OFF;
+	_runningStatus = false;
     
 	_SerialObjIn  = &serialObjectIn;
 	_SerialObjOut = &serialObjectOut;
+	
 	
     //Make Sure Handler Pointers Are Empty:
     _handleMidiEvent       = 0;
@@ -216,6 +220,8 @@ MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel liste
     _handleStop          = 0;
     _handleActiveSense     = 0;
     _handleReset         = 0;
+	
+	
 }
 // initialise the Library
 //Parameters: id the identifier for this port, this will be provided back to the callbacks to distinguish the ports when using a callback on several ports
@@ -556,10 +562,10 @@ String MidiPort::commandTypeToString(CommandType cmd)
         cmdName = F("NOTE_OFF");
         break;
     case NOTE_ON:
-        cmdName = F("NOTE_ON");
+        cmdName = F("NOTE_ON ");
         break;
     case POLY_AT:
-        cmdName = F("POLY_AT");
+        cmdName = F("POLY_AT ");
         break;
     case CTRL_CHANGE:
         cmdName = F("CTRL_CHANGE");
@@ -644,16 +650,6 @@ CommandType MidiPort::getEventCmdType(byte status)
     }
     return INVALID;
 }
-boolean MidiPort::isChannelMessage(CommandType cmd)
-{
-    if ((cmd > 0x7f) && (cmd < 0xf0)) return true;
-    return false ;
-}
-boolean MidiPort::isSystemMessage(CommandType cmd)
-{
-    if (cmd >= 0xf0) return true;
-    return false ;
-}
 
 //Determine how to forward traffic.
 void MidiPort::forwardTraffic(byte newByte)
@@ -726,7 +722,8 @@ inline void MidiPort::writeMsg(uint8_t msg[], uint8_t len)
         {
             if (msg[0] == _msg_lastSent)
             {
-                _SerialObjOut->write(&msg[1], 2);
+				// first attempt to fix enable running status....
+                _SerialObjOut->write(&(msg[1]),2);                
 				//Serial.println("W1");
             }
             else
@@ -751,7 +748,15 @@ inline void MidiPort::writeMsg(uint8_t msg[], uint8_t len)
     _SerialObjOu->flush();
 #endif
 }
-inline void MidiPort::writeMsg(uint8_t msg)
+void MidiPort::writeMsg(uint8_t msg)
+{
+    _msg_lastSent = 0;
+    _SerialObjOut->write(msg);
+#ifdef IMMEDIATE_SEND
+    _SerialObjOut->flush();
+#endif
+}
+void MidiPort::writeCommand(CommandType msg)
 {
     _msg_lastSent = 0;
     _SerialObjOut->write(msg);

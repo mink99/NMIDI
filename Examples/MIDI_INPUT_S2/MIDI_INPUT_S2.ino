@@ -6,7 +6,7 @@
 
 
 
-#define PORT Serial2
+#define PORT Serial1
 //Print MIDI Events to the USB serial.
 
 //Note: This sketch requires an Arduino with multiple serial ports, such as an Arduino MEGA.

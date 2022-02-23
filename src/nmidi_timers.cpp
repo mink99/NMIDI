@@ -12,27 +12,27 @@ NMidi Libary C++ FILE v2.1 by Mink
 
 #include "NMidi.h"
 
-
 using namespace nmidi;
 
 //Send 24 times per quarter note when SYNC is enabled:
 void MidiPort::timingClock()
 {
-    writeMsg(TIMING_CLOCK);
+    writeCommand(TIMING_CLOCK);
 }
 
 //Start, continue, and stop playing:
-void MidiPort::sendStart()
+ void MidiPort::sendStart()
 {
-    writeMsg(START);
+    writeCommand(START);
 }
-void MidiPort::sendContinue()
-{
-    writeMsg(CONTINUE);
+ void MidiPort::sendStop()
+{	
+    writeCommand(STOP);
 }
-void MidiPort::sendStop()
+
+ void MidiPort::sendContinue()
 {
-    writeMsg(STOP);
+    writeCommand(CONTINUE);
 }
 
 /** SPP Song Position Pointer.

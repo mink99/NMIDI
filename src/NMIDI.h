@@ -51,6 +51,14 @@ const char *decodeNote (byte note);
 byte decodeOct (byte note);
 char *decodeNote2 (byte note);
 
+const long magic_number = 2500000;
+long bpm2tick(uint8_t __bpm);
+long bpm2tick4(uint8_t __bpm);
+
+boolean isChannelMessage(byte cmd) ;
+boolean isSystemMessage(byte cmd) ;
+boolean isRealtimeMessage(byte cmd) ;
+
 #endif
 namespace nmidi
 {
@@ -99,7 +107,7 @@ namespace nmidi
 #define CC_Data_Decrement	97		//Usually used to decrement data for RPN and NRPN messages.
 
     //Receivable Message Types:
-    enum CommandType
+    enum CommandType : byte
     {
         //internal Messages:
         NO_NEW_MSG       	= 0x00, ///< No New Events Recieved
@@ -129,7 +137,7 @@ namespace nmidi
         ACTIVE_SENSE     = 0xFE, ///< Just don't use it. It's pointless.
         SOFT_RESET       = 0xFF, ///< Perform Soft Reset
     };
-    enum NRPNType
+    enum NRPNType : byte
     {
         NRPN_LSB		= 0x62,
         NRPN_MSB		= 0x63,
@@ -138,7 +146,8 @@ namespace nmidi
         NRPN_TERM		= 0xFF,
     };
     //Possible Channels:
-    enum Channel {
+    enum Channel : byte
+	{
 		CH1 = 0, 
 		CH2 = 1, 
 		CH3 = 2, 
@@ -169,10 +178,10 @@ namespace nmidi
 
     enum MTCFrames
     {
-        MTC_24FPS = 24,   ///< Thru Disabled. Nothing received on the MIDI IN port is forwarded to the MIDI OUT port.
-        MTC_25FPS = 25, ///< Forwards received commands to MIDI OUT unless they're on the listening channel. This makes the most sense, and is the default setting.
-        MTC_29FPS = 29,  ///< Forwards received commands to MIDI OUT only if they are on the listening channel.
-        MTC_30FPS = 30,   ///< Any traffic received on MIDI IN is immediately forwarded to MIDI OUT. Warning, may cause a feedback loop in some setups!
+        MTC_24FPS = 24,   ///< 24 fps
+        MTC_25FPS = 25, ///< 25 fps
+        MTC_29FPS = 29,  ///< 29.x fps
+        MTC_30FPS = 30,   ///< 30 FPS
     };
     /** @defgroup Main MidiPort
      *  These Classes are Used For core features
@@ -231,10 +240,11 @@ namespace nmidi
         void sendSongSelect(byte);
         void sendTuneRequest();
         //Real-Time Messages:
-        void timingClock();
-        void sendStart();
-        void sendContinue();
-        void sendStop();
+         void timingClock();
+         void sendStart();
+         void sendContinue();
+         void sendStop();
+		
         void activeSense();
 
         // utilities sends
@@ -291,10 +301,14 @@ namespace nmidi
         void *handleReset(void (*handler)(const uint8_t ));  //[No Parameters]
 
  // unoptimised write
-        // encapsulate Serial object for USB
+        // 
 		void writeMsg(uint8_t msg[], uint8_t len = 3);
         void writeMsg(uint8_t msg);
+		void writeCommand(CommandType msg);
 
+
+		
+		
     private:
         //---- Internal Functions ----
         CommandType readPort();
@@ -303,8 +317,7 @@ namespace nmidi
         void forwardTraffic(byte);
         boolean flt_channel();
 
-        boolean isChannelMessage(CommandType cmd) ;
-        boolean isSystemMessage(CommandType cmd) ;
+        
 
         // Variable length messages
         boolean processSysex(byte newByte );

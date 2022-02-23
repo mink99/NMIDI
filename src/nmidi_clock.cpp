@@ -33,7 +33,7 @@ NMidi Libary C++ FILE v2.1 by Mink
 
 using namespace nmidi;
 
-const long magic_number = 2500000;
+
 
 MidiClockSession::MidiClockSession(  MidiPort *_port)
 {

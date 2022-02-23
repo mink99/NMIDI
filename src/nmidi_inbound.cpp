@@ -37,19 +37,19 @@ void MidiPort::scanForData()
 
             if(_handleMidiEvent != 0)
             {
-                boolean result = _handleMidiEvent(_portID, event, _activeChannel, _msg, msg_length);
+                boolean result = _handleMidiEvent(_portID, event, msg_channel, _msg, msg_length);
                 if (!result) return;
             }
             //Voice Messages:
-            if     (event == NOTE_ON && _handleNoteOn) _handleNoteOn(_portID, _activeChannel, msg_param1, msg_param2);
-            else if(event == NOTE_OFF && _handleNoteOff) _handleNoteOff(_portID, _activeChannel, msg_param1, msg_param2);
-            else if(event == POLY_AT && _handleKeyPressure) _handleKeyPressure(_portID, _activeChannel, msg_param1, msg_param2);
-            else if(event == CTRL_CHANGE && _handleControlChange) _handleControlChange(_portID, _activeChannel, msg_param1, msg_param2);
-            else if(event == PROG_CHANGE && _handleProgramChange) _handleProgramChange(_portID, _activeChannel, msg_param1);
-            else if(event == CHANNEL_AT && _handleChannelPressure) _handleChannelPressure(_portID, _activeChannel, msg_param1);
-            else if(event == PITCH_BEND && _handlePitchBend) _handlePitchBend(_portID, _activeChannel, ((msg_param2 << 7) + msg_param1 - 8192));
+            if     (event == NOTE_ON && _handleNoteOn) _handleNoteOn(_portID, msg_channel, msg_param1, msg_param2);
+            else if(event == NOTE_OFF && _handleNoteOff) _handleNoteOff(_portID, msg_channel, msg_param1, msg_param2);
+            else if(event == POLY_AT && _handleKeyPressure) _handleKeyPressure(_portID, msg_channel, msg_param1, msg_param2);
+            else if(event == CTRL_CHANGE && _handleControlChange) _handleControlChange(_portID, msg_channel, msg_param1, msg_param2);
+            else if(event == PROG_CHANGE && _handleProgramChange) _handleProgramChange(_portID, msg_channel, msg_param1);
+            else if(event == CHANNEL_AT && _handleChannelPressure) _handleChannelPressure(_portID, msg_channel, msg_param1);
+            else if(event == PITCH_BEND && _handlePitchBend) _handlePitchBend(_portID, msg_channel, ((msg_param2 << 7) + msg_param1 - 8192));
             //Mode Messages:
-            else if(event == CHANNEL_MODE && _handleChannelMode) _handleChannelMode(_portID, _activeChannel, msg_param1, msg_param2);
+            else if(event == CHANNEL_MODE && _handleChannelMode) _handleChannelMode(_portID, msg_channel, msg_param1, msg_param2);
             //System Messages:
             else if(event == SYSEX_START && _handleSysEx && msg_length > 1)
             {
