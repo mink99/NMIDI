@@ -242,8 +242,10 @@ namespace nmidi
         //Real-Time Messages:
          void timingClock();
          void sendStart();
+		 void sendMMC_Start();
          void sendContinue();
          void sendStop();
+		 void sendMMC_Stop();
 		
         void activeSense();
 

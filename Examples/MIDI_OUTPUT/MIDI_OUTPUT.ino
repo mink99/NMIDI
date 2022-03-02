@@ -43,7 +43,7 @@ void loop() {
     portA.sendNoteOff(CH1, rand + i, 90);
     //portB.sendNoteOff(CH2, rand + i + 12, 90);
   }
-  delay(120);
+  delay(1200);
   
   //port.sendBankChange(CH1,1, 32);
 

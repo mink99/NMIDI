@@ -360,6 +360,26 @@ void MidiPort::sendSysEx(byte idCode[], unsigned int idCodeLength, byte data[], 
     //Write End Command to MIDI Port:
     _SerialObjOut->write((uint8_t)SYSEX_END);
 }
+//Send MMC strings:
+void MidiPort::sendMMC_Start()
+{
+    _SerialObjOut->write((uint8_t)SYSEX_START);    
+	_SerialObjOut->write((uint8_t)0x7F);    
+	_SerialObjOut->write((uint8_t)0x7F);    
+	_SerialObjOut->write((uint8_t)0x06);    
+	_SerialObjOut->write((uint8_t)0x02); 
+    _SerialObjOut->write((uint8_t)SYSEX_END);
+}
+void MidiPort::sendMMC_Stop()
+{
+       
+    _SerialObjOut->write((uint8_t)SYSEX_START);    
+	_SerialObjOut->write((uint8_t)0x7F);    
+	_SerialObjOut->write((uint8_t)0x7F);    
+	_SerialObjOut->write((uint8_t)0x06);    
+	_SerialObjOut->write((uint8_t)0x01); 
+    _SerialObjOut->write((uint8_t)SYSEX_END);
+}
 
 
 
