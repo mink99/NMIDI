@@ -12,15 +12,23 @@
 #define PORTY Serial2
 
 
-
+#define USE_INTERFACES
 #include <NMIDI.h>
+#include <nmidi-if.h>
+
 
 using namespace nmidi;
+
+
 
 //Create new instance of nMidi library:
 
 MidiPort portA = MidiPort(PORTX);
 MidiPort portB = MidiPort(PORTY);
+
+#include "Notehandler.h"
+
+NoteHandler nh;
 
 void setup() {
   //Turn of MEGA 2560's anoying always-on status LED:
@@ -49,10 +57,10 @@ void setup() {
 
   portA.handleMidiEvent(processData);
   portB.handleMidiEvent(processData);
-  portA.handleNoteOn(_handleNoteON);
-  portA.handleNoteOff(_handleNoteOFF);
+  portA.handleNoteOn(&nh);
+  portA.handleNoteOff(&nh);
 //
-  portA.handleProgramChange(_handleProgramChange);
+//  portA.handleProgramChange(_handleProgramChange);
 
 }
 
@@ -65,6 +73,7 @@ void loop() {
 
 boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {
   //Print MIDI Event Data:
+  Serial.print("MAIN ***** ");
   Serial.print(port);
   Serial.print(":");
   Serial.print(portA.commandTypeToString(cmd));
@@ -82,24 +91,7 @@ boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint
   Serial.println("]");
   return true;
 }
-void _handleNoteON(uint8_t port, Channel ch, byte note, byte velocity)
-{
-  Serial.print("***** Note ON (");
-  Serial.print(port);
-  Serial.print(",");
-  Serial.print(ch + 1);
-  Serial.print("):");
-  Serial.println(decodeNote2(note));
-  portA.sendNoteOn(ch, note, velocity);
-}
-void _handleNoteOFF(uint8_t port, Channel ch, byte note, byte velocity)
-{
-  Serial.print("***** Note OFF(");
-  Serial.print(ch + 1);
-  Serial.print("):");
-  Serial.println(decodeNote2(note));
-  portA.sendNoteOff(ch, note, velocity);
-}
+
 void _handleProgramChange(uint8_t port, Channel ch, byte pgm)
 {
   Serial.print("***** Program Change ");
