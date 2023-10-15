@@ -41,11 +41,13 @@ void MidiPort::scanForData()
                 if (!result) return;
             }
 			// interface
+#ifdef USE_NMIDI_INTERFACES			
 			if(pMidiEventHandler != 0)
             {
                 boolean result = pMidiEventHandler->_handleMidiEvent(_portID, event, msg_channel, _msg, msg_length);
                 if (!result) return;
             }
+#endif //USE_NMIDI_INTERFACES			
             //Voice Messages:
             if     (event == NOTE_ON && _handleNoteOn) _handleNoteOn(_portID, msg_channel, msg_param1, msg_param2);
             else if(event == NOTE_OFF && _handleNoteOff) _handleNoteOff(_portID, msg_channel, msg_param1, msg_param2);
@@ -100,6 +102,7 @@ void MidiPort::scanForData()
             //Give microcontroller some time to think:
             //delayMicroseconds(1);
 			// interfaces
+#ifdef USE_NMIDI_INTERFACES			
 			//Voice Messages:
             if     (event == NOTE_ON && pNoteOnHandler) pNoteOnHandler->_handleNoteOn(_portID, msg_channel, msg_param1, msg_param2);
             else if(event == NOTE_OFF && pNoteOffHandler) pNoteOffHandler->_handleNoteOff(_portID, msg_channel, msg_param1, msg_param2);
@@ -151,7 +154,7 @@ void MidiPort::scanForData()
             else if(event == STOP && pStopHandler) pStopHandler->_handleStop(_portID);
             else if(event == ACTIVE_SENSE && pActiveSenseHandler) pActiveSenseHandler->_handleActiveSense(_portID); // pfui bah
             else if(event == SOFT_RESET && pResetHandler) pResetHandler->_handleReset(_portID);
-
+#endif //USE_NMIDI_INTERFACES
         }
         //Reset Vars:
         if(msg_length)

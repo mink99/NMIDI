@@ -65,7 +65,7 @@ boolean isRealtimeMessage(byte cmd) ;
 namespace nmidi
 {
 
-
+#ifdef USE_NMIDI_INTERFACES
 	class IMidiEventHandler;
 	class INoteOnHandler;
 	class INoteOffHandler;
@@ -89,7 +89,7 @@ namespace nmidi
 	class IStopHandler;
 	class IActiveSenseHandler;
 	class IResetHandler; 
-	
+#endif // USE_NMIDI_INTERFACES	
 
 
 
@@ -342,7 +342,7 @@ public:
 	void *handleStop(void (*handler)(const uint8_t ));  //[No Parameters]
 	void *handleActiveSense(void (*handler)(const uint8_t ));  //[No Parameters]
 	void *handleReset(void (*handler)(const uint8_t ));  //[No Parameters]
-
+#ifdef USE_NMIDI_INTERFACES
 	void *handleMidiEvent(IMidiEventHandler *p);
 	void *handleNoteOn(INoteOnHandler *p);
 	void *handleNoteOff(INoteOffHandler *p);
@@ -366,7 +366,7 @@ public:
 	void *handleStop(IStopHandler *p);
 	void *handleActiveSense(IActiveSenseHandler *p);
 	void *handleReset(IResetHandler *p);
-
+#endif //USE_NMIDI_INTERFACES
 // unoptimised write
 	//
 	void writeMsg(uint8_t msg[], uint8_t len = 3);
@@ -422,7 +422,7 @@ private:
 	void (*_handleActiveSense)(const uint8_t );
 	void (*_handleReset)(const uint8_t );
 	
-
+#ifdef USE_NMIDI_INTERFACES
 	IMidiEventHandler* 			pMidiEventHandler;
 	INoteOnHandler* 			pNoteOnHandler;
 	INoteOffHandler* 			pNoteOffHandler;
@@ -443,7 +443,7 @@ private:
 	IStopHandler* 				pStopHandler;
 	IActiveSenseHandler* 		pActiveSenseHandler;
 	IResetHandler* 				pResetHandler		;
-
+#endif //USE_NMIDI_INTERFACES
 
 	//---- Main Variables ----
 	Stream *_SerialObjIn;
@@ -473,7 +473,8 @@ private:
 };
 /** @} */ // end of group1
 } // namespace
-
+#ifdef USE_NMIDI_INTERFACES
 #include <nmidi-if.h>
+#endif
 
 #endif

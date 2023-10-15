@@ -27,3 +27,4 @@ Examples/MIDI_INPUT/inols-err.log
 Examples/MIDI_INPUT/inols.log
 *.geany
 src/.geanyprj
+*.bak

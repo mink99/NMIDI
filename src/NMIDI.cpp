@@ -183,6 +183,7 @@ MidiPort::MidiPort(Channel listenCh)
 	_handleActiveSense     = 0;
 	_handleReset         = 0;
 
+#ifdef USE_NMIDI_INTERFACES
 	pMidiEventHandler = 0;
 	pNoteOnHandler = 0;
 	pNoteOffHandler = 0;
@@ -203,7 +204,7 @@ MidiPort::MidiPort(Channel listenCh)
 	pStopHandler = 0;
 	pActiveSenseHandler = 0;
 	pResetHandler = 0;
-
+#endif // USE_NMIDI_INTERFACES
 };
 
 MidiPort::MidiPort(Stream &serialObjectInOut, Channel listenCh) : MidiPort::MidiPort(serialObjectInOut,serialObjectInOut,listenCh) {};
@@ -243,6 +244,7 @@ MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel liste
 	_handleActiveSense     = 0;
 	_handleReset         = 0;
 
+#ifdef USE_NMIDI_INTERFACES
 	pMidiEventHandler = 0;
 	pNoteOnHandler = 0;
 	pNoteOffHandler = 0;
@@ -264,7 +266,7 @@ MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel liste
 	pActiveSenseHandler = 0;
 	pResetHandler = 0;
 
-
+#endif //USE_NMIDI_INTERFACES
 }
 // initialise the Library
 //Parameters: id the identifier for this port, this will be provided back to the callbacks to distinguish the ports when using a callback on several ports
@@ -555,7 +557,7 @@ void *MidiPort::handleReset(void (*handler)(const uint8_t ))
 	_handleReset = handler;
 	return (void *) fptr;
 }
-
+#ifdef USE_NMIDI_INTERFACES
 void *MidiPort::handleMidiEvent(IMidiEventHandler* p)
 {	
 	void *fptr =pMidiEventHandler;
@@ -680,7 +682,7 @@ void *MidiPort::handleReset(IResetHandler* p)
 	return fptr;
 };
 
-
+#endif // USE_NMIDI_INTERFACES
 //------------------------------------------ Extra Functions -----------------------------------------
 
 //Get the expected length, in bytes, of a particular type of event when completed:
