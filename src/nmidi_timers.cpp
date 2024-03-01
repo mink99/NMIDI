@@ -152,16 +152,16 @@ uint8_t MidiPort::sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, 
         switch (fps)
         {
         case 24:
-            toSend | 0b01;
+            toSend |= 0b01;
             break;
         case 25:
-            toSend | 0b01;
+            toSend |= 0b01;
             break;
         case 29:
-            toSend | 0b10;
+            toSend |= 0b10;
             break;
         case 30:
-            toSend | 0b11;
+            toSend |= 0b11;
             break;
         }
     }
