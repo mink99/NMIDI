@@ -728,9 +728,12 @@ int8_t MidiPort::getEventDataLength(CommandType cmd)
 	//Real-Time Messages:
 
 	case TIMING_CLOCK:
+	case ACTIVE_SENSE:
 	case START:
 	case CONTINUE:
 	case STOP:
+	case INVALID:
+	case SOFT_RESET:
 		paramCount = 0;
 		break;
 	}
