@@ -17,7 +17,7 @@ using namespace nmidi;
 
 //Create new instance of NMidi library:
 
-MidiPort portA = MidiPort();
+MidiPort portA;
 
 
 void setup() {

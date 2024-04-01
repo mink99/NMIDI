@@ -251,7 +251,7 @@ public:
 	void setInputChannelFilter(Channel);
 	void setThruMode(ThruMode);
 	//---- Extra ----
-	String commandTypeToString(CommandType);
+	static String commandTypeToString(CommandType);
 	int8_t keysPressed()  ///< number of keys pressed at the moment
 	{
 		return _keysPressed;
@@ -272,6 +272,8 @@ public:
 	void modeChange(Channel, byte, byte);
 	//System Messages:
 	void sendSysEx(byte[], unsigned int, byte[], unsigned int);
+	void sendSysEx(byte[], unsigned int, boolean generateSysexStartStop = true);	
+	void sendSysEx(const char*, boolean generateSysexStartStop = true);	
 	void sendQuarterTimeFrame(byte, byte);
 	void sendSPP(uint16_t);
 	void sendSongSelect(byte);

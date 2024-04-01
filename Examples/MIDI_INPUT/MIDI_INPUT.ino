@@ -19,8 +19,8 @@ using namespace nmidi;
 
 //Create new instance of nMidi library:
 
-MidiPort portA = MidiPort(PORTX);
-MidiPort portB = MidiPort(PORTY);
+MidiPort portA(PORTX);
+MidiPort portB(PORTY);
 
 void setup() {
   //Turn of MEGA 2560's anoying always-on status LED:
@@ -59,8 +59,6 @@ void setup() {
 void loop() {
   portA.scanForData();
   portB.scanForData();
-
-
 }
 
 boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {

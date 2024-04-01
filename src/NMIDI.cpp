@@ -406,6 +406,40 @@ void MidiPort::sendSysEx(byte idCode[], unsigned int idCodeLength, byte data[], 
 	_SerialObjOut->write((uint8_t)SYSEX_END);
 }
 //Send MMC strings:
+
+//Send SysEx strings:
+//(SysEx messages can have as many lines as you want, and each line is a 7-bit (0-127) number.)
+//Parameters: data (1+ length table [0-127]), dataLength (1+), boolean generateSysexStartStop Is 0xF/ alreafy in the data ?
+void MidiPort::sendSysEx(byte data[], unsigned int dataLength, boolean generateSysexStartStop)
+{
+	//Write Command to MIDI Port:
+	if (generateSysexStartStop) _SerialObjOut->write((uint8_t)SYSEX_START);
+	//Write SysEx Data to MIDI Port:
+	for(int i = 0; i < dataLength; i++)
+	{
+		if(data[i] > 127) _SerialObjOut->write((uint8_t)127);
+		else _SerialObjOut->write((uint8_t)data[i]);
+	}
+	//Write End Command to MIDI Port:
+	if (generateSysexStartStop)_SerialObjOut->write((uint8_t)SYSEX_END);
+}
+void MidiPort::sendSysEx(const char* data, boolean generateSysexStartStop)
+{
+	uint8_t dataLength = strlen(data);
+	//Write Command to MIDI Port:
+	if (generateSysexStartStop) _SerialObjOut->write((uint8_t)SYSEX_START);
+	//Write SysEx Data to MIDI Port:
+	for(int i = 0; i < dataLength; i++)
+	{
+		if(data[i] > 127) _SerialObjOut->write((uint8_t)127);
+		else _SerialObjOut->write((uint8_t)data[i]);
+	}
+	//Write End Command to MIDI Port:
+	if (generateSysexStartStop)_SerialObjOut->write((uint8_t)SYSEX_END);
+}
+
+//Send MMC strings:
+
 void MidiPort::sendMMC_Start()
 {
 	sendMMC_Command(MMC_PLAY);	
@@ -741,7 +775,7 @@ int8_t MidiPort::getEventDataLength(CommandType cmd)
 }
 
 //Convert CommandType to string:
-String MidiPort::commandTypeToString(CommandType cmd)
+static String MidiPort::commandTypeToString(CommandType cmd)
 {
 	String cmdName;
 	switch(cmd)
