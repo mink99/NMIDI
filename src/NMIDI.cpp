@@ -154,6 +154,7 @@ under construction ...
 
 
 using namespace nmidi;
+
 //Main Library Functions:
 MidiPort::MidiPort(Channel listenCh)
 {
@@ -442,11 +443,11 @@ void MidiPort::sendSysEx(const char* data, boolean generateSysexStartStop)
 
 void MidiPort::sendMMC_Start()
 {
-	sendMMC_Command(MMC_PLAY);	
+	sendMMC_Command(MMC_PLAY);
 }
 void MidiPort::sendMMC_Stop()
 {
-	sendMMC_Command(MMC_STOP);	
+	sendMMC_Command(MMC_STOP);
 }
 void MidiPort::sendMMC_Command(uint8_t command)
 {
@@ -469,7 +470,7 @@ void MidiPort::sendMMC_Command(uint8_t command)
 //Voice Messages:
 void *MidiPort::handleMidiEvent(boolean (*handler)(const uint8_t, CommandType, Channel, byte[], uint8_t))
 {
-	
+
 	void *fptr = &_handleMidiEvent;
 	_handleMidiEvent = handler;
 	return (void *) fptr;
@@ -593,7 +594,7 @@ void *MidiPort::handleReset(void (*handler)(const uint8_t ))
 }
 #ifdef USE_NMIDI_INTERFACES
 void *MidiPort::handleMidiEvent(IMidiEventHandler* p)
-{	
+{
 	void *fptr =pMidiEventHandler;
 	pMidiEventHandler = p;
 	return fptr;
@@ -775,7 +776,7 @@ int8_t MidiPort::getEventDataLength(CommandType cmd)
 }
 
 //Convert CommandType to string:
-static String MidiPort::commandTypeToString(CommandType cmd)
+String MidiPort::commandTypeToString(const CommandType cmd)
 {
 	String cmdName;
 	switch(cmd)

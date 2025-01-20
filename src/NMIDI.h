@@ -1,3 +1,6 @@
+#ifndef HEADER_E848279BBB47E345
+#define HEADER_E848279BBB47E345
+
 /** MidiPort Libary
 
 based on ArduMidi C++ FILE v2.1 by Pecacheu
@@ -43,7 +46,9 @@ NMidi Libary C++ FILE v2.1 by Mink
 #define LO_NIBBLE(b) (byte)(b & 0x0F)
 #define HI_NIBBLE(b) (byte)((b & 0xF0) >> 4 )
 
-#define _CH(b) (Channel)(b-1)
+#define _CH(b) (nmidi::Channel)(b-1)
+#define INT2CH(b) (nmidi::Channel)(b-1)
+#define CH2INT(b) (b+1)
 
 unsigned short combineBytes(unsigned char _msb, unsigned char _lsb);
 const char *decodeNote (byte note);
@@ -88,8 +93,8 @@ namespace nmidi
 	class IContinueHandler;
 	class IStopHandler;
 	class IActiveSenseHandler;
-	class IResetHandler; 
-#endif // USE_NMIDI_INTERFACES	
+	class IResetHandler;
+#endif // USE_NMIDI_INTERFACES
 
 
 
@@ -203,6 +208,41 @@ enum Channel : byte
 	CH_NONE = 126,
 	CH_ALL = 127
 };
+inline Channel& operator++(Channel& ch)
+{
+	int n = CH2INT(ch);
+	n++;
+	if (n > 15) n = 0;
+	ch =  (Channel)n;
+	return ch;
+}
+inline Channel& operator+=(Channel& ch,const int8_t &n2)
+{
+    int n = (Channel)ch;
+	n += n2;
+	if (n < 0) n = 15;
+	if (n > 15) n = 0;
+	ch =  (Channel)n;
+		return ch;
+}
+inline Channel& operator--(Channel& ch)
+{
+	int n = (Channel)ch;
+	n--;
+	if (n < 0) n = 15;
+	ch =  (Channel)n;
+		return ch;
+}
+inline Channel& operator-=(Channel& ch,const int8_t &n2)
+{
+	int n = (Channel)ch;
+	n -= n2;
+	if (n < 0) n = 15;
+	if (n > 15) n = 0;
+	ch =  (Channel)n;
+		return ch;
+}
+
 //Traffic Forwarding Modes:
 enum ThruMode
 {
@@ -251,7 +291,7 @@ public:
 	void setInputChannelFilter(Channel);
 	void setThruMode(ThruMode);
 	//---- Extra ----
-	static String commandTypeToString(CommandType);
+	static String commandTypeToString(const CommandType);
 	int8_t keysPressed()  ///< number of keys pressed at the moment
 	{
 		return _keysPressed;
@@ -272,8 +312,8 @@ public:
 	void modeChange(Channel, byte, byte);
 	//System Messages:
 	void sendSysEx(byte[], unsigned int, byte[], unsigned int);
-	void sendSysEx(byte[], unsigned int, boolean generateSysexStartStop = true);	
-	void sendSysEx(const char*, boolean generateSysexStartStop = true);	
+	void sendSysEx(byte[], unsigned int, boolean generateSysexStartStop = true);
+	void sendSysEx(const char*, boolean generateSysexStartStop = true);
 	void sendQuarterTimeFrame(byte, byte);
 	void sendSPP(uint16_t);
 	void sendSongSelect(byte);
@@ -281,12 +321,12 @@ public:
 	//Real-Time Messages:
 	void timingClock();
 	void sendStart();
-	
+
 	void sendContinue();
 	void sendStop();
-	
+
 	void activeSense();
-	
+
 	//MMC Commands
 	void sendMMC_Start();
 	void sendMMC_Stop();
@@ -423,7 +463,7 @@ private:
 	void (*_handleStop)(const uint8_t );
 	void (*_handleActiveSense)(const uint8_t );
 	void (*_handleReset)(const uint8_t );
-	
+
 #ifdef USE_NMIDI_INTERFACES
 	IMidiEventHandler* 			pMidiEventHandler;
 	INoteOnHandler* 			pNoteOnHandler;
@@ -480,3 +520,5 @@ private:
 #endif
 
 #endif
+#endif // header guard 
+

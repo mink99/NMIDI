@@ -43,7 +43,7 @@ void setup() {
   Serial.print("Serial Port:");
   Serial.print(PORTY);
   Serial.print(" with id:");
-  Serial.println(portB.getPortID());
+  Serial.println(portB.getPortID()); 
   Serial.println("---------------------------------------");
   
 
