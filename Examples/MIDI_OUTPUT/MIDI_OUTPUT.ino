@@ -17,10 +17,16 @@ void setup() {
 
   //Initialize MIDI Libary:
   Serial1.begin(31250);
-//  Serial2.begin(31250);
   Serial.begin(9600);
   portA.begin();
   portA.enableRunningStatus(false);
+  Serial.begin(9600);
+  Serial.println("MIDI TEST Output");
+  Serial.print("Serial port:");
+  Serial.print(PORTA);
+  Serial.print(" with id:");
+  Serial.println(portA.getPortID());
+   Serial.println();
 //  portB.begin();
 //  portB.enableRunningStatus();
 }
@@ -44,6 +50,7 @@ void loop() {
     //portB.sendNoteOff(CH2, rand + i + 12, 90);
   }
   delay(1200);
+   Serial.println();
   
   //port.sendBankChange(CH1,1, 32);
 

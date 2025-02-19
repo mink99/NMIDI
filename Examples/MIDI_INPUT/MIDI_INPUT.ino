@@ -32,23 +32,23 @@ void setup() {
   //Begin regular Serial:
   portA.begin(1);
   portA.enableRunningStatus(false);
-  portB.begin(2);
-  portB.enableRunningStatus(false);
+  //portB.begin(2);
+  //portB.enableRunningStatus(false);
   Serial.begin(9600);
-  Serial.println("MIDI TEST ");
+  Serial.println("MIDI TEST Input");
   Serial.print("Serial port:");
   Serial.print(PORTX);
   Serial.print(" with id:");
   Serial.println(portA.getPortID());
-  Serial.print("Serial Port:");
-  Serial.print(PORTY);
-  Serial.print(" with id:");
-  Serial.println(portB.getPortID()); 
+//  Serial.print("Serial Port:");
+//  Serial.print(PORTY);
+//  Serial.print(" with id:");
+//  Serial.println(portB.getPortID()); 
   Serial.println("---------------------------------------");
   
 
   portA.handleMidiEvent(processData);
-  portB.handleMidiEvent(processData);
+  //portB.handleMidiEvent(processData);
   portA.handleNoteOn(_handleNoteON);
   portA.handleNoteOff(_handleNoteOFF);
 //
@@ -58,7 +58,7 @@ void setup() {
 
 void loop() {
   portA.scanForData();
-  portB.scanForData();
+  //portB.scanForData();
 }
 
 boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {

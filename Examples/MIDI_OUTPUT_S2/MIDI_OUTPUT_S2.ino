@@ -4,7 +4,7 @@
 
 #include <HardwareSerial.h> //<-- Not Necessary, But Recomended for Stability Across Arduino IDE Versions.
 
-#define PORT Serial                                                                                                                                                                                              
+#define PORT Serial1                                                                                                                                                                                              
 
 #include <NMIDI.h>
 
