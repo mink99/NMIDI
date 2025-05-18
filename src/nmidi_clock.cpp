@@ -7,26 +7,35 @@ NMidi Libary C++ FILE v2.1 by Mink
 
 
 
+
 #include <Stream.h>
 #include <Arduino.h>
 
 #include <NMidi.h>
 #include <NMidi_clock.h>
 
-#ifdef USE_TIMER_THREE_MIDI_CLOCK
-	#include <TimerThree.h>
-	#define TIMER Timer3
-#endif
 
-#ifdef USE_ESP8266_MIDI_CLOCK
+#ifdef __SAM3X8E__
+#pragma message "__SAM3X8E__ DUE"
+	#include <DueTimer.h>
+	#define TIMER Timer1
+	#define initialize(n) setPeriod(n)
+#endif
+#ifdef __AVR__
+#pragma message "__AVR__ UNO or NANO or MEGA"
+	#ifdef USE_TIMER_THREE_MIDI_CLOCK
+		#include <TimerThree.h>
+		#define TIMER Timer3
+	#else	
+		#include <TimerOne.h>
+		#define TIMER Timer1
+	#endif
+#endif
+#ifdef ESP8266
+	#pragma message "__AVR__ NODEMCU"
 	#include <ESP8266_HW_ISRTimer.h>
 	#define TIMER _ESP8266_HW_ISRTimer 
-#endif
-
-#ifdef USE_TIMER_ONE_MIDI_CLOCK
-	#include <TimerOne.h>
-	#define TIMER Timer1
-#endif
+#endif	
 
 
 

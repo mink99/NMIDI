@@ -441,22 +441,17 @@ void MidiPort::sendSysEx(const char* data, boolean generateSysexStartStop)
 
 //Send MMC strings:
 
-void MidiPort::sendMMC_Start()
-{
-	sendMMC_Command(MMC_PLAY);
-}
-void MidiPort::sendMMC_Stop()
-{
-	sendMMC_Command(MMC_STOP);
-}
 void MidiPort::sendMMC_Command(uint8_t command)
 {
-	_SerialObjOut->write((uint8_t)SYSEX_START);
+	_SerialObjOut->write((uint8_t)SYSEX_START); 
+	_SerialObjOut->write((uint8_t)0x7F);	
 	_SerialObjOut->write((uint8_t)0x7F);
-	_SerialObjOut->write((uint8_t)0x7F);
-	_SerialObjOut->write((uint8_t)0x06);
+	_SerialObjOut->write((uint8_t)0x06);	
+	_SerialObjOut->write((uint8_t)0x06);	// Bug in Serial, first 0x06 is getting lost
 	_SerialObjOut->write((uint8_t)command);
 	_SerialObjOut->write((uint8_t)SYSEX_END);
+	_SerialObjOut->flush();
+	_SerialObjOut->flush();
 }
 
 

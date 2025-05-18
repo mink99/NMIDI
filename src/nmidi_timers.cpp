@@ -5,7 +5,7 @@ based on ArduMidi C++ FILE v2.1 by Pecacheu
 NMidi Libary C++ FILE v2.1 by Mink
 
  */
-#ifndef ARDUINO_ESP8266_NODEMCU 
+
 
 #include <Stream.h>
 #include <Arduino.h>
@@ -174,4 +174,3 @@ uint8_t MidiPort::sendMTCTimeFrame(uint8_t counter , byte hh, byte mm, byte ss, 
 };
 
 
-#endif 

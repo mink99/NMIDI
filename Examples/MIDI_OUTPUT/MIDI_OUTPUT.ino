@@ -1,32 +1,35 @@
+#include <SendOnlySoftwareSerial.h>
+
 //NMIDI "Test" Example, by Pecacheu.
 
 //Simple test to make sure your MIDI OUT port is wired correctly.
 
 #include <HardwareSerial.h> //<-- Not Necessary, But Recomended for Stability Across Arduino IDE Versions.
 
-
+SendOnlySoftwareSerial Ser_0(8);
 #include <NMIDI.h>
 
 using namespace nmidi;
 
+
 //Create new instance of NMIDI library:
-MidiPort portA = MidiPort(Serial1);
-//MidiPort portB = MidiPort(Serial2);
+MidiPort portA = MidiPort(Ser_0);
+//MidiPort portA = MidiPort(Serial2);
 
 void setup() {
 
   //Initialize MIDI Libary:
-  Serial1.begin(31250);
+  Ser_0.begin(31250);
   Serial.begin(9600);
   portA.begin();
   portA.enableRunningStatus(false);
-  Serial.begin(9600);
-  Serial.println("MIDI TEST Output");
-  Serial.print("Serial port:");
-  Serial.print(PORTA);
-  Serial.print(" with id:");
-  Serial.println(portA.getPortID());
-   Serial.println();
+  //Serial.begin(9600);
+  //Serial.println("MIDI TEST Output");
+  //Serial.print("Serial port:");
+  //Serial.print(portA);
+  //Serial.print(" with id:");
+  //Serial.println(portA.getPortID());
+   //Serial.println();
 //  portB.begin();
 //  portB.enableRunningStatus();
 }
@@ -43,14 +46,15 @@ void loop() {
   
     portA.sendNoteOn(CH1, rand + i, 90);
     //portB.sendNoteOn(CH2, rand + i + 12, 90);
-    Serial.println(rand + i);
+    //Serial.println(rand + i);
 
     delay(120);
+    
     portA.sendNoteOff(CH1, rand + i, 90);
     //portB.sendNoteOff(CH2, rand + i + 12, 90);
   }
   delay(1200);
-   Serial.println();
+   // Serial.println();
   
   //port.sendBankChange(CH1,1, 32);
 

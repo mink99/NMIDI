@@ -15,15 +15,6 @@ NMidi Libary C++ FILE v2.1 by Mink
 
 #include <stream.h>
 
-#ifdef ESP8266
-#define 	USE_ESP8266_MIDI_CLOCK
-#undef USE_TIMER_THREE_MIDI_CLOCK
-#undef USE_TIMER_ONE_MIDI_CLOCK
-#else
-#ifndef USE_TIMER_THREE_MIDI_CLOCK
-#define 	USE_TIMER_ONE_MIDI_CLOCK
-#endif
-#endif
 
 
 #include <Arduino.h>
@@ -142,11 +133,16 @@ namespace nmidi
 
 
 
-#define MMC_PLAY (uint8_t) 0x02
 #define MMC_STOP  (uint8_t) 0x01
-#define MMC_PAUSE  (uint8_t) 0x09
+#define MMC_PLAY (uint8_t) 0x02
+#define MMC_FASTFORWARD  (uint8_t) 0x04
 #define MMC_REWIND  (uint8_t) 0x05
-#define MMC_RECORD_READY  (uint8_t) 0x08
+#define MMC_RECORD  (uint8_t) 0x06
+#define MMC_RECORD_STOP  (uint8_t) 0x07
+#define MMC_RECORD_PAUSE  (uint8_t) 0x08
+#define MMC_PAUSE  (uint8_t) 0x09
+
+
 //Receivable Message Types:
 enum CommandType : byte
 {
@@ -250,6 +246,7 @@ enum ThruMode
 	FORWARD_OTHER, ///< Forwards received commands to MIDI OUT unless they're on the listening channel. This makes the most sense, and is the default setting.
 	FORWARD_SELF,  ///< Forwards received commands to MIDI OUT only if they are on the listening channel.
 	FORWARD_ALL,   ///< Any traffic received on MIDI IN is immediately forwarded to MIDI OUT. Warning, may cause a feedback loop in some setups!
+	FORWARD_SOFT_THRU = FORWARD_ALL,   ///< Any traffic received on MIDI IN is immediately forwarded to MIDI OUT. Warning, may cause a feedback loop in some setups!
 };
 
 enum MTCFrames
@@ -290,6 +287,7 @@ public:
 	};
 	void setInputChannelFilter(Channel);
 	void setThruMode(ThruMode);
+	void setSoftThru() {setThruMode(FORWARD_SOFT_THRU);};
 	//---- Extra ----
 	static String commandTypeToString(const CommandType);
 	int8_t keysPressed()  ///< number of keys pressed at the moment
@@ -328,8 +326,11 @@ public:
 	void activeSense();
 
 	//MMC Commands
-	void sendMMC_Start();
-	void sendMMC_Stop();
+	void sendMMC_Start() {sendMMC_Command(MMC_PLAY);};
+	void sendMMC_Stop() {sendMMC_Command(MMC_STOP);};
+	void sendMMC_Rewind() {sendMMC_Command(MMC_REWIND);};
+	void sendMMC_Pause() {sendMMC_Command(MMC_PAUSE);};
+	void sendMMC_Record() {sendMMC_Command(MMC_RECORD  );};
 	void sendMMC_Command(uint8_t);
 
 	// utilities sends
@@ -520,5 +521,5 @@ private:
 #endif
 
 #endif
-#endif // header guard 
+#endif // header guard
 

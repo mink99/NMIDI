@@ -8,8 +8,8 @@
 //Note: This sketch requires an Arduino with multiple serial ports, such as an Arduino MEGA.
 
 
+#define PORTY Serial
 #define PORTX Serial1
-#define PORTY Serial2
 
 
 
@@ -20,31 +20,27 @@ using namespace nmidi;
 //Create new instance of nMidi library:
 
 MidiPort portA(PORTX);
-MidiPort portB(PORTY);
+
 
 void setup() {
   //Turn of MEGA 2560's anoying always-on status LED:
 
   //Begin MIDI library:
   PORTX.begin(31250);
-  PORTY.begin(31250);
+  
 
   //Begin regular Serial:
   portA.begin(1);
   portA.enableRunningStatus(false);
-  //portB.begin(2);
-  //portB.enableRunningStatus(false);
-  Serial.begin(9600);
-  Serial.println("MIDI TEST Input");
-  Serial.print("Serial port:");
-  Serial.print(PORTX);
-  Serial.print(" with id:");
-  Serial.println(portA.getPortID());
-//  Serial.print("Serial Port:");
-//  Serial.print(PORTY);
-//  Serial.print(" with id:");
-//  Serial.println(portB.getPortID()); 
-  Serial.println("---------------------------------------");
+  
+  PORTY.begin(9600);
+  PORTY.println("MIDI TEST Input");
+  PORTY.print("Serial port:");
+  PORTY.print(PORTX);
+  PORTY.print(" with id:");
+  PORTY.println(portA.getPortID());
+
+  PORTY.println("---------------------------------------");
   
 
   portA.handleMidiEvent(processData);
@@ -53,6 +49,7 @@ void setup() {
   portA.handleNoteOff(_handleNoteOFF);
 //
   portA.handleProgramChange(_handleProgramChange);
+  portA.handleTimingClock(_handleClock);
 
 }
 
@@ -63,43 +60,47 @@ void loop() {
 
 boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {
   //Print MIDI Event Data:
-  Serial.print(port);
-  Serial.print(":");
-  Serial.print(portA.commandTypeToString(cmd));
-  Serial.print(" (");
-  Serial.print(msgLen);
-  Serial.print(")CH:  ");
-  if (ch == CH_ALL) Serial.print("[N/A]");
-  else Serial.print(ch + 1);
-  Serial.print("[");
+  PORTY.print(port);
+  PORTY.print(":");
+  PORTY.print(portA.commandTypeToString(cmd));
+  PORTY.print(" (");
+  PORTY.print(msgLen);
+  PORTY.print(")CH:  ");
+  if (ch == CH_ALL) PORTY.print("[N/A]");
+  else PORTY.print(ch + 1);
+  PORTY.print("[");
   for (int i = 0; i < msgLen; i++)
   {
-    Serial.print(data[i], HEX);
-    Serial.print(" ");
+    PORTY.print(data[i], HEX);
+    PORTY.print(" ");
   }
-  Serial.println("]");
+  PORTY.println("]");
   return true;
 }
 void _handleNoteON(uint8_t port, Channel ch, byte note, byte velocity)
 {
-  Serial.print("***** Note ON (");
-  Serial.print(port);
-  Serial.print(",");
-  Serial.print(ch + 1);
-  Serial.print("):");
-  Serial.println(decodeNote2(note));
+  PORTY.print("***** Note ON (");
+  PORTY.print(port);
+  PORTY.print(",");
+  PORTY.print(ch + 1);
+  PORTY.print("):");
+  PORTY.println(decodeNote2(note));
   portA.sendNoteOn(ch, note, velocity);
 }
 void _handleNoteOFF(uint8_t port, Channel ch, byte note, byte velocity)
 {
-  Serial.print("***** Note OFF(");
-  Serial.print(ch + 1);
-  Serial.print("):");
-  Serial.println(decodeNote2(note));
-  portA.sendNoteOff(ch, note, velocity);
+  PORTY.print("***** Note OFF(");
+  PORTY.print(ch + 1);
+  PORTY.print("):");
+  PORTY.println(decodeNote2(note));
+  
 }
 void _handleProgramChange(uint8_t port, Channel ch, byte pgm)
 {
-  Serial.print("***** Program Change ");
-  Serial.println(pgm);
+  PORTY.print("***** Program Change ");
+  PORTY.println(pgm);
+}
+void _handleClock(uint8_t port)
+{
+  portA.timingClock();
 }
