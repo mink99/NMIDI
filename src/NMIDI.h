@@ -141,6 +141,8 @@ namespace nmidi
 #define MMC_RECORD_STOP  (uint8_t) 0x07
 #define MMC_RECORD_PAUSE  (uint8_t) 0x08
 #define MMC_PAUSE  (uint8_t) 0x09
+#define MMC_LOCATE  (uint8_t) 0x44
+#define MMC_SHUTTLE  (uint8_t) 0x47
 
 
 //Receivable Message Types:
@@ -331,7 +333,14 @@ public:
 	void sendMMC_Rewind() {sendMMC_Command(MMC_REWIND);};
 	void sendMMC_Pause() {sendMMC_Command(MMC_PAUSE);};
 	void sendMMC_Record() {sendMMC_Command(MMC_RECORD  );};
+	void sendMMC_Record_Stop() {sendMMC_Command(MMC_RECORD_STOP  );};
+	void sendMMC_Locate(int8_t hh,int8_t mm,int8_t ss,int8_t ff) {sendMMC_Command(MMC_LOCATE,hh,mm,ss,ff  );};
+	void sendMMC_Shuttle() {sendMMC_Command(MMC_SHUTTLE,0,0,0  );};
+	void sendMMC_RerturnToZero() {sendMMC_Command(MMC_LOCATE,0,0,0,0  );};
 	void sendMMC_Command(uint8_t);
+	void sendMMC_Command(uint8_t command,uint8_t p1, uint8_t p2, uint8_t p3 , uint8_t p4);
+	void sendMMC_Command(uint8_t command,uint8_t p1, uint8_t p2, uint8_t p3);
+	
 
 	// utilities sends
 	void sendBankChange(Channel, byte, byte );

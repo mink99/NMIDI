@@ -443,18 +443,96 @@ void MidiPort::sendSysEx(const char* data, boolean generateSysexStartStop)
 
 void MidiPort::sendMMC_Command(uint8_t command)
 {
-	_SerialObjOut->write((uint8_t)SYSEX_START); 
-	_SerialObjOut->write((uint8_t)0x7F);	
-	_SerialObjOut->write((uint8_t)0x7F);
-	_SerialObjOut->write((uint8_t)0x06);	
-	_SerialObjOut->write((uint8_t)0x06);	// Bug in Serial, first 0x06 is getting lost
-	_SerialObjOut->write((uint8_t)command);
-	_SerialObjOut->write((uint8_t)SYSEX_END);
-	_SerialObjOut->flush();
-	_SerialObjOut->flush();
+	 _SerialObjOut->write((uint8_t)SYSEX_START); 
+	 _SerialObjOut->write((uint8_t)0x7F);		
+	 _SerialObjOut->write((uint8_t)0x7F);		
+	 _SerialObjOut->write((uint8_t)0x06);		
+	 _SerialObjOut->write((uint8_t)command);	 
+	 _SerialObjOut->write((uint8_t)SYSEX_END);
+	 _SerialObjOut->flush();
+/*	 
+	char data[4];
+	data[0] = 0x7F;
+	data[1] = 0x7F;
+	data[2] = 0x06;
+	data[3] = command;
+	sendSysEx(data);
+*/
 }
 
+void MidiPort::sendMMC_Command(uint8_t command,uint8_t p1,uint8_t p2,uint8_t p3,uint8_t p4)
+{
+	/*
+	Sub-ID#2 =44: LOCATE command
+	length: 06 Data byte count (always six bytes)
+	subcommand: 01 TARGET
+	hr: hours and type (as with MTC Fullframe); values 0-17 (= 0-23 decimal)
+	mn: minutes; values 0-3B (= 0-59 decimal)
+	sc: seconds; values 0-3B (= 0-59 decimal)
+	fr: frames; values 0-1D (= 0-29 decimal)
+	ff: sub-frames / fractional frames (leave at zero if un-sure); values 0-63 (= 0-99 decimal)
+	*/
+	 _SerialObjOut->write((uint8_t)SYSEX_START); 
+	 _SerialObjOut->write((uint8_t)0x7F);		
+	 _SerialObjOut->write((uint8_t)0x7F);		
+	 _SerialObjOut->write((uint8_t)0x06);		
+	 _SerialObjOut->write((uint8_t)command);
+	 _SerialObjOut->write((uint8_t)0x06);		
+	 _SerialObjOut->write((uint8_t)0x01);		
+	 _SerialObjOut->write(p1);		
+	 _SerialObjOut->write(p2);		
+	 _SerialObjOut->write(p3);		
+	 _SerialObjOut->write(p4);			 
+	 _SerialObjOut->write((uint8_t)0);			 
+	 _SerialObjOut->write((uint8_t)SYSEX_END);
+	 _SerialObjOut->flush();
+/*	 
+	char data[4];
+	data[0] = 0x7F;
+	data[1] = 0x7F;
+	data[2] = 0x06;
+	data[3] = command;
+	sendSysEx(data);
+*/
+}
 
+void MidiPort::sendMMC_Command(uint8_t command,uint8_t p1,uint8_t p2,uint8_t p3)
+{
+	/*
+	F0 7F <Device0ID> 06 47 <length=03> <sh> <sm> <sl> F7
+	Note: sh, sm and sl are defined as Standard Speed in the MIDI 1.0 Recommended Practice RP-013.
+	sh = Nominal Integer part of speed value: 0 g sss ppp
+	g = sign (1 = reverse)
+	sss = shift left count (see below)
+	ppp = most significant bits of integer multiple of play-speed
+	sm = MSB of nominal fractional part of speed value: 0 qqqqqqq
+	sl = LSB of nominal fractional part of speed value: 0 rrrrrrr
+	Speed values per shift left count:
+		BINARY REPRESENTATION USABLE RANGES (DECIMAL)
+		Integer multiple Fractional part Integer Fractional
+		sss of play speed of play speed range resolution
+		000 ppp - qqqqqqqrrrrrrr 0-7 1/16384
+		001 pppq - qqqqqqrrrrrrr 0-15 1/8192
+		010 pppqq - qqqqqrrrrrrr 0-31 1/4096
+		011 pppqqq - qqqqrrrrrrr 0-63 1/2048
+		100 pppqqqq - qqqrrrrrrr 0-127 1/1024
+		101 pppqqqqq - qqrrrrrrr 0-255 1/512
+		110 pppqqqqqq - qrrrrrrr 0-511 1/256
+		111 pppqqqqqqq - rrrrrrr 0-1023 1/128
+	*/
+	
+	 _SerialObjOut->write((uint8_t)SYSEX_START); 
+	 _SerialObjOut->write((uint8_t)0x7F);		
+	 _SerialObjOut->write((uint8_t)0x7F);		
+	 _SerialObjOut->write((uint8_t)0x06);		
+	 _SerialObjOut->write((uint8_t)command);
+	 _SerialObjOut->write((uint8_t)0x03);		
+	 _SerialObjOut->write(p1);		
+	 _SerialObjOut->write(p2);		
+	 _SerialObjOut->write(p3);		
+	 _SerialObjOut->write((uint8_t)SYSEX_END);
+	 _SerialObjOut->flush();
+}
 
 
 
