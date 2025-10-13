@@ -46,9 +46,6 @@ const char *decodeNote (byte note);
 byte decodeOct (byte note);
 char *decodeNote2 (byte note);
 
-const long magic_number = 2500000;
-long bpm2tick(uint8_t __bpm);
-long bpm2tick4(uint8_t __bpm);
 
 boolean isChannelMessage(byte cmd) ;
 boolean isSystemMessage(byte cmd) ;
@@ -296,6 +293,9 @@ public:
 	{
 		return _keysPressed;
 	};
+	
+	// Midi Clock: internal 
+	void internalClockEvent(byte) ;
 
 	//Voice Messages:
 	void sendNoteOn(Channel, byte, byte);
@@ -336,7 +336,7 @@ public:
 	void sendMMC_Record_Stop() {sendMMC_Command(MMC_RECORD_STOP  );};
 	void sendMMC_Locate(int8_t hh,int8_t mm,int8_t ss,int8_t ff) {sendMMC_Command(MMC_LOCATE,hh,mm,ss,ff  );};
 	void sendMMC_Shuttle() {sendMMC_Command(MMC_SHUTTLE,0,0,0  );};
-	void sendMMC_RerturnToZero() {sendMMC_Command(MMC_LOCATE,0,0,0,0  );};
+	void sendMMC_ReturnToZero() {sendMMC_Command(MMC_LOCATE,0,0,0,0  );};
 	void sendMMC_Command(uint8_t);
 	void sendMMC_Command(uint8_t command,uint8_t p1, uint8_t p2, uint8_t p3 , uint8_t p4);
 	void sendMMC_Command(uint8_t command,uint8_t p1, uint8_t p2, uint8_t p3);
@@ -424,6 +424,12 @@ public:
 	void writeMsg(uint8_t msg[], uint8_t len = 3);
 	void writeMsg(uint8_t msg);
 	void writeCommand(CommandType msg);
+// toString();
+	operator String()
+	{
+		String s = "MidiPort " + String(getPortID()) + " in 0X" + String((long)_SerialObjIn,HEX) + " out 0X" +  String((long)_SerialObjOut,HEX);
+		return s;
+	}
 
 
 
@@ -435,6 +441,7 @@ private:
 	int8_t getEventDataLength(CommandType);
 	void forwardTraffic(byte);
 	boolean flt_channel();
+	volatile boolean CLK_Queued = false; // an internal clock event was captured 
 
 
 

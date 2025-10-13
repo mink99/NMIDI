@@ -1011,8 +1011,8 @@ boolean MidiPort::processNRPN(byte newByte )
 inline void MidiPort::writeMsg(uint8_t msg[], uint8_t len)
 {
 
-	//Serial.print("writeMsg len ");
-	//Serial.println(len );
+	// Serial.print("writeMsg len ");
+	// Serial.println(len );
 	if (_runningStatus)
 	{
 		if (len == 3)
@@ -1039,7 +1039,7 @@ inline void MidiPort::writeMsg(uint8_t msg[], uint8_t len)
 	{
 		_msg_lastSent = 0;
 		_SerialObjOut->write(msg, len);
-		//Serial.println("W3");
+//		Serial.println("W3");
 	}
 #ifdef IMMEDIATE_SEND
 	_SerialObjOu->flush();

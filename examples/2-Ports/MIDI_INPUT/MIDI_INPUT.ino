@@ -31,32 +31,43 @@ void setup() {
   //Begin regular Serial:
   Serial.begin(9600);
 
-  portA.begin(PORT,1);
+  while (!Serial) {};  // we love the Minima
+
+  portA.begin(PORT,1); // instead of Using the CTOR 
+                       //MidiPort portA = MidiPort(Serial1);
+
+  Serial.println("******** MIDI ready ************");
+  Serial.println("\n MIDI TEST Output");
+  Serial.print("Serial port:");
+  Serial.print(" with id:");
+  Serial.println(portA.getPortID());
+  Serial.flush();
+  
 
 
-  portA.handleMidiEvent(processData);
+  portA.handleMidiEvent(_processData);
   portA.handleNoteOn(_handleNoteON);
   portA.handleNoteOff(_handleNoteOFF);
-  portA.setThruMode(FORWARD_ALL);
+  // portA.setThruMode(FORWARD_ALL);
 
 
   Serial.println("START MIDI READ");
 }
 
 void loop() {
-  portA.scanForData();
-  digitalWrite(13, portA.keysPressed());   // turn the LED on (HIGH is the voltage level)
+  portA.scanForData();  // could also be in SerialEvent1() 
+  //digitalWrite(13, portA.keysPressed());   // turn the LED on (HIGH is the voltage level)
   
 }
 
 
-boolean processData(uint8_t _port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {
+boolean _processData(uint8_t _port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {
   //Print MIDI Event Data:
   Serial.print("***** ");
   Serial.print(_port);
   Serial.print(" ** ");
   Serial.print(portA.commandTypeToString(cmd));
-  Serial.print(", ");
+  Serial.print(" , ");
   if (ch == CH_ALL) Serial.print("[N/A]");
   else Serial.print(ch + 1);
   Serial.print(", {");
