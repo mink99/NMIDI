@@ -495,3 +495,31 @@ void MidiPort::sendKeyPressure(Channel ch, byte key, byte pressure)
     _msg[2] = pressure;
     writeMsg(_msg);
 }
+
+//Send if the velocity changes while holding down the note:
+//Parameters: channel (Channel), key (0-127), pressure (0-127)
+
+/**
+ *  \brief KeyPressure Poly
+ *
+ *  \param [in] ch Channel
+ *  \param [in] key note
+ *  \param [in] pressure 0-127
+ */
+void MidiPort::sendAftertouch(Channel ch, byte pressure)
+{
+	 //Error Checking:
+    if(ch > CH16) ch = CH16;
+    if(pressure > 127) pressure = 127;
+    //Perform Command Calculation:
+    byte _msg[3];
+    _msg[0] = CHANNEL_AT + ch;
+    _msg[1] = pressure;
+    _msg[2] = 0X00;
+    writeMsg(_msg);
+}
+
+void MidiPort::sendPolyphonicAftertouch(Channel ch, byte key , byte pressure)
+{
+	sendKeyPressure(ch,key,pressure);
+}

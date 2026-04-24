@@ -155,6 +155,7 @@ under construction ...
 
 using namespace nmidi;
 
+
 //Main Library Functions:
 MidiPort::MidiPort(Channel listenCh)
 {
@@ -163,26 +164,26 @@ MidiPort::MidiPort(Channel listenCh)
 	_thruMode = FORWARD_OFF;
 	_runningStatus = false;
 
-	_handleMidiEvent       = 0;
-	_handleNoteOn        = 0;
-	_handleNoteOff         = 0;
-	_handleKeyPressure   = 0;
-	_handleControlChange   = 0;
-	_handleProgramChange = 0;
-	_handleChannelPressure = 0;
-	_handlePitchBend     = 0;
-	_handleChannelMode     = 0;
-	_handleSysEx         = 0;
-	_handleQuarterFrame    = 0;
-	_handleSongPosition  = 0;
-	_handleSongSelect      = 0;
-	_handleTuneRequest   = 0;
-	_handleTimingClock     = 0;
-	_handleStart         = 0;
-	_handleContinue        = 0;
-	_handleStop          = 0;
-	_handleActiveSense     = 0;
-	_handleReset         = 0;
+	_fptrMidiEvent       = 0;
+	_fptrNoteOn        = 0;
+	_fptrNoteOff         = 0;
+	_fptrKeyPressure   = 0;
+	_fptrControlChange   = 0;
+	_fptrProgramChange = 0;
+	_fptrChannelPressure = 0;
+	_fptrPitchBend     = 0;
+	_fptrChannelMode     = 0;
+	_fptrSysEx         = 0;
+	_fptrQuarterFrame    = 0;
+	_fptrSongPosition  = 0;
+	_fptrSongSelect      = 0;
+	_fptrTuneRequest   = 0;
+	_fptrTimingClock     = 0;
+	_fptrStart         = 0;
+	_fptrContinue        = 0;
+	_fptrStop          = 0;
+	_fptrActiveSense     = 0;
+	_fptrReset         = 0;
 
 #ifdef USE_NMIDI_INTERFACES
 	pMidiEventHandler = 0;
@@ -224,26 +225,26 @@ MidiPort::MidiPort(Stream &serialObjectIn,Stream &serialObjectOut, Channel liste
 
 
 	//Make Sure Handler Pointers Are Empty:
-	_handleMidiEvent       = 0;
-	_handleNoteOn        = 0;
-	_handleNoteOff         = 0;
-	_handleKeyPressure   = 0;
-	_handleControlChange   = 0;
-	_handleProgramChange = 0;
-	_handleChannelPressure = 0;
-	_handlePitchBend     = 0;
-	_handleChannelMode     = 0;
-	_handleSysEx         = 0;
-	_handleQuarterFrame    = 0;
-	_handleSongPosition  = 0;
-	_handleSongSelect      = 0;
-	_handleTuneRequest   = 0;
-	_handleTimingClock     = 0;
-	_handleStart         = 0;
-	_handleContinue        = 0;
-	_handleStop          = 0;
-	_handleActiveSense     = 0;
-	_handleReset         = 0;
+	_fptrMidiEvent       = 0;
+	_fptrNoteOn        = 0;
+	_fptrNoteOff         = 0;
+	_fptrKeyPressure   = 0;
+	_fptrControlChange   = 0;
+	_fptrProgramChange = 0;
+	_fptrChannelPressure = 0;
+	_fptrPitchBend     = 0;
+	_fptrChannelMode     = 0;
+	_fptrSysEx         = 0;
+	_fptrQuarterFrame    = 0;
+	_fptrSongPosition  = 0;
+	_fptrSongSelect      = 0;
+	_fptrTuneRequest   = 0;
+	_fptrTimingClock     = 0;
+	_fptrStart         = 0;
+	_fptrContinue        = 0;
+	_fptrStop          = 0;
+	_fptrActiveSense     = 0;
+	_fptrReset         = 0;
 
 #ifdef USE_NMIDI_INTERFACES
 	pMidiEventHandler = 0;
@@ -541,128 +542,147 @@ void MidiPort::sendMMC_Command(uint8_t command,uint8_t p1,uint8_t p2,uint8_t p3)
 //----- Add Event Handlers -----
 
 //Voice Messages:
-void *MidiPort::handleMidiEvent(boolean (*handler)(const uint8_t, CommandType, Channel, byte[], uint8_t))
+void *MidiPort::handleMidiEvent(boolean (*handler)(const uint8_t, CommandType, Channel,uint8_t, byte[]))
 {
 
-	void *fptr = &_handleMidiEvent;
-	_handleMidiEvent = handler;
+	void *fptr = &_fptrMidiEvent;
+	_fptrMidiEvent = handler;
 	return (void *) fptr;
 }
 void *MidiPort::handleNoteOn(void (*handler)(const uint8_t, Channel, byte, byte))
 {
-	void *fptr = &_handleNoteOn;
-	_handleNoteOn = handler;
+	void *fptr = &_fptrNoteOn;
+	_fptrNoteOn = handler;
+	if (handler == nullptr) unregisterCommand(NOTE_ON); else registerCommand(NOTE_ON);
 	return (void *) fptr;
 }
 void *MidiPort::handleNoteOff(void (*handler)(const uint8_t, Channel, byte, byte))
 {
-	void *fptr = &_handleNoteOff;
-	_handleNoteOff = handler;
+	void *fptr = &_fptrNoteOff;
+	_fptrNoteOff = handler;
+	if (handler == nullptr) unregisterCommand(NOTE_OFF); else registerCommand(NOTE_OFF);
 	return (void *) fptr;
 }
 void *MidiPort::handleKeyPressure(void (*handler)(const uint8_t, Channel, byte, byte))
 {
-	void *fptr = &_handleKeyPressure;
-	_handleKeyPressure = handler;
+	void *fptr = &_fptrKeyPressure;
+	_fptrKeyPressure = handler;
+	if (handler == nullptr) unregisterCommand(POLY_AT); else registerCommand(POLY_AT);
 	return (void *) fptr;
 }
 void *MidiPort::handleControlChange(void (*handler)(const uint8_t, Channel, byte, byte))
 {
-	void *fptr = &_handleControlChange;
-	_handleControlChange = handler;
+	void *fptr = &_fptrControlChange;
+	_fptrControlChange = handler;
+	if (handler == nullptr) unregisterCommand(CTRL_CHANGE); else registerCommand(CTRL_CHANGE);
 	return (void *) fptr;
 }
 void *MidiPort::handleProgramChange(void (*handler)(const uint8_t, Channel, byte))
 {
-	void *fptr = &_handleProgramChange;
-	_handleProgramChange = handler;
+	void *fptr = &_fptrProgramChange;
+	_fptrProgramChange = handler;
+	if (handler == nullptr) unregisterCommand(PROG_CHANGE); else registerCommand(PROG_CHANGE);
 	return (void *) fptr;
 }
 void *MidiPort::handleChannelPressure(void (*handler)(const uint8_t, Channel, byte))
 {
-	void *fptr = &_handleChannelPressure;
-	_handleChannelPressure = handler;
+	void *fptr = &_fptrChannelPressure;
+	_fptrChannelPressure = handler;
+	if (handler == nullptr) unregisterCommand(CHANNEL_AT); else registerCommand(CHANNEL_AT);
 	return (void *) fptr;
 }
 void *MidiPort::handlePitchBend(void (*handler)(const uint8_t, Channel, int16_t))
 {
-	void *fptr = &_handlePitchBend;
-	_handlePitchBend = handler;
+	void *fptr = &_fptrPitchBend;
+	_fptrPitchBend = handler;
+	if (handler == nullptr) unregisterCommand(PITCH_BEND); else registerCommand(PITCH_BEND);
 	return (void *) fptr;
 }
 //Mode Messages:
 void *MidiPort::handleChannelMode(void (*handler)(const uint8_t, Channel, byte, byte))
 {
-	void *fptr = &_handleChannelMode;
-	_handleChannelMode = handler;
+	void *fptr = &_fptrChannelMode;
+	_fptrChannelMode = handler;
+	if (handler == nullptr) unregisterCommand(CHANNEL_MODE); else registerCommand(CHANNEL_MODE);
 	return (void *) fptr;
 }
 //System Messages:
-void *MidiPort::handleSysEx(void (*handler)(const uint8_t, byte[], unsigned int, byte[], unsigned int))
+void *MidiPort::handleSysEx(void (*handler)(const uint8_t, uint8_t, byte[]))
 {
-	void *fptr = &_handleSysEx;
-	_handleSysEx = handler;
+	void *fptr = &_fptrSysEx;
+	_fptrSysEx = handler;
+	if (handler == nullptr) unregisterCommand(SYSEX_START); else registerCommand(SYSEX_START);
 	return (void *) fptr;
 }
 void *MidiPort::handleQuarterFrame(void (*handler)(const uint8_t, byte, byte))
 {
-	void *fptr = &_handleQuarterFrame;
-	_handleQuarterFrame = handler;
+	void *fptr = &_fptrQuarterFrame;
+	_fptrQuarterFrame = handler;
+	if (handler == nullptr) unregisterCommand(Q_TIME_FRAME); else registerCommand(Q_TIME_FRAME);
 	return (void *) fptr;
 }
 void *MidiPort::handleSongPosition(void (*handler)(const uint8_t, uint16_t))
 {
-	void *fptr = &_handleSongPosition;
-	_handleSongPosition = handler;
+	void *fptr = &_fptrSongPosition;
+	_fptrSongPosition = handler;
+	if (handler == nullptr) unregisterCommand(SONG_POS); else registerCommand(SONG_POS);
 	return (void *) fptr;
 }
 void *MidiPort::handleSongSelect(void (*handler)(const uint8_t, byte))
 {
-	void *fptr = &_handleSongSelect;
-	_handleSongSelect = handler;
+	void *fptr = &_fptrSongSelect;
+	_fptrSongSelect = handler;
+	if (handler == nullptr) unregisterCommand(SONG_SELECT); else registerCommand(SONG_SELECT);
 	return (void *) fptr;
 }
 void *MidiPort::handleTuneRequest(void (*handler)(const uint8_t ))
 {
-	void *fptr = &_handleTuneRequest;
-	_handleTuneRequest = handler;
+	void *fptr = &_fptrTuneRequest;
+	_fptrTuneRequest = handler;
+	if (handler == nullptr) unregisterCommand(TUNE_REQ); else registerCommand(TUNE_REQ);
 	return (void *) fptr;
 }
 //Real-Time Messages:
 void *MidiPort::handleTimingClock(void (*handler)(const uint8_t ))
 {
-	void *fptr = &_handleTimingClock;
-	_handleTimingClock = handler;
+	void *fptr = &_fptrTimingClock;
+	_fptrTimingClock = handler;
+	if (handler == nullptr) unregisterCommand(TIMING_CLOCK); else registerCommand(TIMING_CLOCK);
 	return (void *) fptr;
 }
 void *MidiPort::handleStart(void (*handler)(const uint8_t ))
 {
-	void *fptr = &_handleStart;
-	_handleStart = handler;
+	void *fptr = &_fptrStart;
+	_fptrStart = handler;
+	if (handler == nullptr) unregisterCommand(START); else registerCommand(START);
 	return (void *) fptr;
 }
 void *MidiPort::handleContinue(void (*handler)(const uint8_t ))
 {
-	void *fptr = &_handleContinue;
-	_handleContinue = handler;
+	void *fptr = &_fptrContinue; 
+	_fptrContinue = handler;
+	if (handler == nullptr) unregisterCommand(CONTINUE); else registerCommand(CONTINUE);
 	return (void *) fptr;
 }
 void *MidiPort::handleStop(void (*handler)(const uint8_t ))
 {
-	void *fptr = &_handleStop;
-	_handleStop = handler;
+	void *fptr = &_fptrStop;
+	_fptrStop = handler;
+	if (handler == nullptr) unregisterCommand(STOP); else registerCommand(STOP);
 	return (void *) fptr;
 }
 void *MidiPort::handleActiveSense(void (*handler)(const uint8_t ))
 {
-	void *fptr = &_handleActiveSense;
-	_handleActiveSense = handler;
+	void *fptr = &_fptrActiveSense;
+	_fptrActiveSense = handler;
+	if (handler == nullptr) unregisterCommand(ACTIVE_SENSE); else registerCommand(ACTIVE_SENSE);
 	return (void *) fptr;
 }
 void *MidiPort::handleReset(void (*handler)(const uint8_t ))
 {
-	void *fptr = &_handleReset;
-	_handleReset = handler;
+	void *fptr = &_fptrReset;
+	_fptrReset = handler;
+	if (handler == nullptr) unregisterCommand(SOFT_RESET); else registerCommand(SOFT_RESET);
 	return (void *) fptr;
 }
 #ifdef USE_NMIDI_INTERFACES
@@ -795,58 +815,7 @@ void *MidiPort::handleReset(IResetHandler* p)
 
 //Get the expected length, in bytes, of a particular type of event when completed:
 //(Returns -1 if cmd is SysEx or INVALID)
-int8_t MidiPort::getEventDataLength(CommandType cmd)
-{
-	int8_t paramCount = -1;
-	switch(cmd)
-	{
-	case NOTE_OFF:
-	case NOTE_ON:
-	case POLY_AT:
-	case CTRL_CHANGE:
-	case CHANNEL_MODE:
-
-	case CHANNEL_AT:
-	case PITCH_BEND:
-		paramCount = 2;
-		break;
-	case PROG_CHANGE:
-		paramCount = 1;
-		break;
-
-	//System Messages:
-	case SYSEX_START:
-	case SYSEX_END:
-		paramCount = -2;
-		break;
-
-	case Q_TIME_FRAME:
-		paramCount = 2;
-		break;
-	case SONG_POS:
-		paramCount = 2;
-		break;
-	case SONG_SELECT:
-		paramCount = 2;
-		break;
-	case TUNE_REQ:
-		paramCount = 0;
-		break;
-
-	//Real-Time Messages:
-
-	case TIMING_CLOCK:
-	case ACTIVE_SENSE:
-	case START:
-	case CONTINUE:
-	case STOP:
-	case INVALID:
-	case SOFT_RESET:
-		paramCount = 0;
-		break;
-	}
-	return paramCount;
-}
+//inline int8_t MidiPort::getEventDataLength(CommandType cmd)
 
 //Convert CommandType to string:
 String MidiPort::commandTypeToString(const CommandType cmd)
@@ -946,6 +915,17 @@ CommandType MidiPort::getEventCmdType(byte status)
 		return (CommandType)status;
 	}
 	return INVALID;
+}
+//Get Channel from cmd number.
+Channel MidiPort::getEventChannel(byte status)
+{
+	Channel ch = CH_NONE;
+	if ((status > 0x7f) && (status < 0xf0))
+	{
+		byte cmd2 = status & 0x0f;
+		return (Channel)cmd2;
+	}	
+	return ch;
 }
 
 //Determine how to forward traffic.

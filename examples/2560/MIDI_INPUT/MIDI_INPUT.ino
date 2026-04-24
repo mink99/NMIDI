@@ -8,7 +8,7 @@
 //Note: This sketch requires an Arduino with multiple serial ports, such as an Arduino MEGA.
 
 
-
+#define _EXPERIMENTAL
 #define PORTX Serial1
 
 
@@ -44,12 +44,11 @@ void setup() {
   
 
   portA.handleMidiEvent(processData);
-  //portB.handleMidiEvent(processData);
   portA.handleNoteOn(_handleNoteON);
   portA.handleNoteOff(_handleNoteOFF);
 //
   portA.handleProgramChange(_handleProgramChange);
-  portA.handleTimingClock(_handleClock);
+  // portA.handleTimingClock(_handleClock);
 
 }
 
@@ -58,8 +57,10 @@ void loop() {
   //portB.scanForData();
 }
 
-boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {
+boolean processData(uint8_t port, CommandType cmd, Channel ch, uint8_t msgLen, byte data[]) {
   //Print MIDI Event Data:
+//  if(cmd == 0xF8 ) return true;
+//  if(cmd == 0xFE ) return true ;
   Serial.print(port);
   Serial.print(":");
   Serial.print(portA.commandTypeToString(cmd));
@@ -85,7 +86,7 @@ void _handleNoteON(uint8_t port, Channel ch, byte note, byte velocity)
   Serial.print(ch + 1);
   Serial.print("):");
   Serial.println(decodeNote2(note));
-  portA.sendNoteOn(ch+7, note, velocity);
+  portA.sendNoteOn(ch, note, velocity);
 }
 void _handleNoteOFF(uint8_t port, Channel ch, byte note, byte velocity)
 {
@@ -93,15 +94,11 @@ void _handleNoteOFF(uint8_t port, Channel ch, byte note, byte velocity)
   Serial.print(ch + 1);
   Serial.print("):");
   Serial.println(decodeNote2(note));
-  portA.sendNoteOff(ch+7, note, velocity);
+  portA.sendNoteOff(ch, note, velocity);
   
 }
 void _handleProgramChange(uint8_t port, Channel ch, byte pgm)
 {
   Serial.print("***** Program Change ");
   Serial.println(pgm);
-}
-void _handleClock(uint8_t port)
-{
-  portA.timingClock();
 }

@@ -31,6 +31,7 @@ void loop() {
   {
     portA.sendNoteOn(CH1, rand + i, 90);
     delay(120);    
+    portA.sendNoteOff(CH1, rand + i, 90);
     delay(120);    
   }
   delay(1200);

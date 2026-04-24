@@ -15,9 +15,18 @@ NMidi Libary C++ FILE v2.1 by Mink
 
 #include <stream.h>
 
-
-
 #include <Arduino.h>
+
+#ifndef ESP32
+#include <ArduinoSTL.h>
+using namespace std;
+#endif
+// must do because STL from ESP32 uses a different byte type 
+#include <string>
+#include <set>
+
+
+
 
 
 
@@ -299,6 +308,8 @@ public:
 
 	//Voice Messages:
 	void sendNoteOn(Channel, byte, byte);
+	void sendAftertouch(Channel, byte);
+	void sendPolyphonicAftertouch(Channel, byte, byte);
 	void sendKeyPressure(Channel, byte, byte);
 	void sendNoteOff(Channel, byte, byte velocity = 0);
 	void sendControlChange(Channel, byte, byte);
@@ -369,9 +380,10 @@ public:
 	//---- Recieve MIDI Messages ----
 	//--- Trigger Callbacks:
 	void scanForData();
+	void scanForDataA();
 	//--- Set Callbacks:
 	//Voice Messages:
-	void *handleMidiEvent(boolean (*handler)(const uint8_t, CommandType, Channel, byte[], uint8_t));  //command, channel, rawEventData (0-127 [1+]), dataLength (1+)
+	void *handleMidiEvent(boolean (*handler)(const uint8_t, CommandType, Channel,uint8_t, byte[]));  //command, channel, rawEventData (0-127 [1+]), dataLength (1+)
 	void *handleNoteOn(void (*handler)(const uint8_t, Channel, byte, byte));  //channel, key (0-127), velocity (0-127)
 	void *handleNoteOff(void (*handler)(const uint8_t, Channel, byte, byte));  //channel, key (0-127), velocity (0-127)
 	void *handleKeyPressure(void (*handler)(const uint8_t, Channel, byte, byte));  //channel, key (0-127), afterTouchPressure (0-127)
@@ -382,7 +394,7 @@ public:
 	//Mode Messages:
 	void *handleChannelMode(void (*handler)(const uint8_t, Channel, byte, byte));  //channel, settingCode (120-127), value (0-127)
 	//System Messages:
-	void *handleSysEx(void (*handler)(const uint8_t, byte[], unsigned int, byte[], unsigned int));  //idCode[] (0-127 [1-3]), idCodeLength (1-3), data[] (0-127 [1+]), dataLength (1+)
+	void *handleSysEx(void (*handler)(const uint8_t,uint8_t, byte[]));  //dataLength (1+), data[] (64 [1+])
 	void *handleQuarterFrame(void (*handler)(const uint8_t, byte, byte));  //msgType (0-7), values (0-15)
 	void *handleSongPosition(void (*handler)(const uint8_t, uint16_t));  //position (0-16383)
 	void *handleSongSelect(void (*handler)(const uint8_t, byte));  //song (0-127)
@@ -435,10 +447,71 @@ public:
 
 
 private:
+	//---- Callback Registry
+	std::set<CommandType> callbackRegistry;
+	bool isRegisteredCommand(CommandType cmd);	
+	void registerCommand(CommandType cmd);
+	void unregisterCommand(CommandType cmd);
+
 	//---- Internal Functions ----
 	CommandType readPort();
 	CommandType getEventCmdType(byte);
-	int8_t getEventDataLength(CommandType);
+	Channel getEventChannel(byte);
+	bool isRegisteredChannel();
+	
+	int8_t getEventDataLength(CommandType cmd)
+	{
+	int8_t paramCount = -1;
+	switch(cmd)
+	{
+	case NOTE_OFF: 
+	case NOTE_ON:
+	case POLY_AT:
+	case CTRL_CHANGE:
+	case CHANNEL_MODE:
+
+	case CHANNEL_AT:
+	case PITCH_BEND:
+		paramCount = 2;
+		break;
+	case PROG_CHANGE:
+		paramCount = 1;
+		break;
+
+	//System Messages:
+	case SYSEX_START:
+	case SYSEX_END:
+		paramCount = -2;
+		break;
+
+	case Q_TIME_FRAME:
+		paramCount = 2;
+		break;
+	case SONG_POS:
+		paramCount = 2;
+		break;
+	case SONG_SELECT:
+		paramCount = 2;
+		break;
+	case TUNE_REQ:
+		paramCount = 0;
+		break;
+
+	//Real-Time Messages:
+
+	case TIMING_CLOCK:
+	case ACTIVE_SENSE:
+	case START:
+	case CONTINUE:
+	case STOP:
+	case INVALID:
+	case SOFT_RESET:
+		paramCount = 0;
+		break;
+	}
+	return paramCount;
+}
+
 	void forwardTraffic(byte);
 	boolean flt_channel();
 	volatile boolean CLK_Queued = false; // an internal clock event was captured 
@@ -457,29 +530,29 @@ private:
 
 	//---- Private Callback Variables ----
 	//Voice Messages:
-	boolean (*_handleMidiEvent)(const uint8_t, CommandType, Channel, byte[], uint8_t);
-	void (*_handleNoteOn)(const uint8_t, Channel, byte note, byte velocity);
-	void (*_handleNoteOff)(const uint8_t, Channel, byte note, byte velocity);
-	void (*_handleKeyPressure)(const uint8_t, Channel, byte, byte);
-	void (*_handleControlChange)(const uint8_t, Channel, byte CC, byte value);
-	void (*_handleProgramChange)(const uint8_t, Channel, byte);
-	void (*_handleChannelPressure)(const uint8_t, Channel, byte);
-	void (*_handlePitchBend)(const uint8_t, Channel, int16_t);
+	boolean (*_fptrMidiEvent)(const uint8_t, CommandType, Channel,uint8_t, byte[]);
+	void (*_fptrNoteOn)(const uint8_t, Channel, byte note, byte velocity);
+	void (*_fptrNoteOff)(const uint8_t, Channel, byte note, byte velocity);
+	void (*_fptrKeyPressure)(const uint8_t, Channel, byte, byte);
+	void (*_fptrControlChange)(const uint8_t, Channel, byte CC, byte value);
+	void (*_fptrProgramChange)(const uint8_t, Channel, byte);
+	void (*_fptrChannelPressure)(const uint8_t, Channel, byte);
+	void (*_fptrPitchBend)(const uint8_t, Channel, int16_t);
 	//Mode Messages:
-	void (*_handleChannelMode)(const uint8_t, Channel, byte, byte);
+	void (*_fptrChannelMode)(const uint8_t, Channel, byte, byte);
 	//System Messages:
-	void (*_handleSysEx)(const uint8_t, byte[], unsigned int, byte[], unsigned int);
-	void (*_handleQuarterFrame)(const uint8_t, byte, byte);
-	void (*_handleSongPosition)(const uint8_t, uint16_t);
-	void (*_handleSongSelect)(const uint8_t, byte);
-	void (*_handleTuneRequest)(const uint8_t );
+	void (*_fptrSysEx)(const uint8_t,uint8_t, byte[]); //Port, dataLen , Data  
+	void (*_fptrQuarterFrame)(const uint8_t, byte, byte);
+	void (*_fptrSongPosition)(const uint8_t, uint16_t);
+	void (*_fptrSongSelect)(const uint8_t, byte);
+	void (*_fptrTuneRequest)(const uint8_t );
 	//Real-Time Messages:
-	void (*_handleTimingClock)(const uint8_t );
-	void (*_handleStart)(const uint8_t );
-	void (*_handleContinue)(const uint8_t );
-	void (*_handleStop)(const uint8_t );
-	void (*_handleActiveSense)(const uint8_t );
-	void (*_handleReset)(const uint8_t );
+	void (*_fptrTimingClock)(const uint8_t );
+	void (*_fptrStart)(const uint8_t );
+	void (*_fptrContinue)(const uint8_t );
+	void (*_fptrStop)(const uint8_t );
+	void (*_fptrActiveSense)(const uint8_t );
+	void (*_fptrReset)(const uint8_t );
 
 #ifdef USE_NMIDI_INTERFACES
 	IMidiEventHandler* 			pMidiEventHandler;

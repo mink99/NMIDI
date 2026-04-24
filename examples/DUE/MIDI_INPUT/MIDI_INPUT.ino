@@ -53,8 +53,9 @@ void loop() {
   //portB.scanForData();
 }
 
-boolean processData(uint8_t port, CommandType cmd, Channel ch, byte data[], uint8_t msgLen) {
+boolean processData(uint8_t port, CommandType cmd, Channel ch, uint8_t msgLen, byte data[]) {
   //Print MIDI Event Data:
+  if (cmd == 0xFE) return false;
   Serial.print(port);
   Serial.print(":");
   Serial.print(portA.commandTypeToString(cmd));
